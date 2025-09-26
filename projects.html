@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects | Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="index.html">EM</a>
+
+    <div class="nav-right">
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="site-nav" aria-label="Main">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="sip.html" data-nav="sip">SIP</a>
+        <a href="boards.html" data-nav="boards">Boards</a>
+        <a href="projects.html" data-nav="projects">Projects</a>
+        <a href="contact.html" data-nav="contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+
+<main class="container">
+  <h1>Projects</h1>
+
+  <section class="grid three">
+    <article class="card project">
+      <img src="Tanks.PNG" alt="Project thumbnail" />
+      <h2>UATanks (Unity)</h2>
+      <p>Arcade tank prototype with AI personalities, powerups, and procedural level generation.</p>
+      <div class="links">
+        <a class="btn btn-small" href="#" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-small btn-secondary" href="#" target="_blank" rel="noopener">Demo/Video</a>
+      </div>
+    </article>
+
+    <article class="card project">
+      <img src="578cdfec-57c5-441c-aa8f-4af22cf06724.png" alt="Project thumbnail" />
+      <h2>Driving System (Unreal)</h2>
+      <p>Enhanced Input driving with acceleration, braking, steering, and jump impulse; blueprint-driven.</p>
+      <div class="links">
+        <a class="btn btn-small" href="#" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-small btn-secondary" href="#" target="_blank" rel="noopener">Demo/Video</a>
+      </div>
+    </article>
+
+    <article class="card project">
+      <img src="skillswap.png" alt="Project thumbnail" />
+      <h2>SkillSwap Hub (JavaScript)</h2>
+      <p>Web app to match users by skills they have vs. skills they want; modular JS and polished UI.</p>
+      <div class="links">
+        <a class="btn btn-small" href="#" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-small btn-secondary" href="#" target="_blank" rel="noopener">Live Site</a>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <small>&copy; <span id="year"></span> Eric Merryman.</small>
+  </div>
+</footer>
+<script src="assets/js/main.js"></script>
+<script>setActive('projects');</script>
+</body>
+</html>

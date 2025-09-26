@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eric Merryman | SIP & Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="index.html">EM</a>
+
+    <div class="nav-right">
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="site-nav" aria-label="Main">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="sip.html" data-nav="sip">SIP</a>
+        <a href="boards.html" data-nav="boards">Boards</a>
+        <a href="projects.html" data-nav="projects">Projects</a>
+        <a href="contact.html" data-nav="contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+
+<main class="container">
+  <section class="hero">
+    <h1>Eric Merryman</h1>
+    <p>Game Programming, University of Advancing Technology</p>
+    <p class="lede">SIP311: Innovative Passwordless Security Solutions</p>
+    <div class="cta-row">
+      <a class="btn" href="sip.html">View SIP</a>
+      <a class="btn btn-secondary" href="projects.html">See Projects</a>
+    </div>
+  </section>
+
+  <section class="grid two">
+    <article class="card">
+      <h2>About Me</h2>
+      <p>
+        I’m a Game Programming student focused on building interactive systems, clean code,
+        and practical prototypes. For SIP311 I’m exploring a passwordless authentication
+        ecosystem that blends biometrics, continuous AI anomaly monitoring, and a wearable
+        token for seamless, secure login.
+      </p>
+    </article>
+    <article class="card">
+      <h2>What’s Here</h2>
+      <ul class="tight">
+        <li><strong>SIP:</strong> Problem, Innovation Claim, Prior Art, Timeline, Visuals</li>
+        <li><strong>Boards:</strong> UAT objectives for Game Programming (for SIP411)</li>
+        <li><strong>Projects:</strong> Highlights with GitHub links</li>
+        <li><strong>Contact:</strong> Email + inquiry form</li>
+      </ul>
+    </article>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <small>&copy; <span id="year"></span> Eric Merryman. All rights reserved.</small>
+  </div>
+</footer>
+<script src="assets/js/main.js"></script>
+<script>setActive('home');</script>
+</body>
+</html>
