@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Passwordless Prototype – Behavior Check</title>
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="card">
+      <h1>Passwordless Login Prototype</h1>
+      <p class="sub">
+        Simulated biometric login + behavior-based anomaly detection with false-positive feedback.
+      </p>
+      <p class="small">
+        Note: This is a working prototype using a lightweight scoring model to demonstrate AI-like adaptation.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Step 1: Simulate Biometric Scan</h2>
+      <button id="btnScan" class="btn">Scan Biometrics</button>
+      <p id="scanStatus" class="status">Waiting for scan…</p>
+    </section>
+
+    <section class="card">
+      <h2>Step 2: Session Context</h2>
+
+      <div class="grid">
+        <label>
+          Login Time
+          <select id="loginTime">
+            <option value="normal">Normal (8am–7pm)</option>
+            <option value="late">Late Night (11pm–5am)</option>
+          </select>
+        </label>
+
+        <label>
+          Device
+          <select id="device">
+            <option value="known">Known Device</option>
+            <option value="new">New Device</option>
+          </select>
+        </label>
+
+        <label>
+          Location
+          <select id="location">
+            <option value="usual">Usual Area</option>
+            <option value="unusual">Unusual / Distant</option>
+          </select>
+        </label>
+      </div>
+
+      <button id="btnEvaluate" class="btn" disabled>Evaluate Session</button>
+    </section>
+
+    <section class="card">
+      <h2>Result</h2>
+      <div class="result">
+        <p><strong>Risk Score:</strong> <span id="riskScore">—</span></p>
+        <p><strong>Decision:</strong> <span id="decision">—</span></p>
+        <p><strong>Current Threshold:</strong> <span id="threshold">—</span></p>
+      </div>
+
+      <div class="actions">
+        <button id="btnFalsePositive" class="btn secondary" disabled>Mark False Positive</button>
+        <button id="btnReset" class="btn ghost">Reset</button>
+      </div>
+
+      <p class="small">
+        Marking a false positive adjusts the threshold to reduce future unnecessary flags (adaptive behavior).
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Audit Log</h2>
+      <ul id="log" class="log"></ul>
+    </section>
+  </main>
+
+  <script src="prototype.js"></script>
+</body>
+</html>
