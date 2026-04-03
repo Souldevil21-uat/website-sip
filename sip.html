@@ -28,7 +28,7 @@
 
 
 <main class="container">
-  <h1>SIP311 — Innovative Passwordless Security Solutions</h1>
+  <h1>SIP — Passwordless Innovative Security Solutions</h1>
 
   <section class="card">
     <h2>Problem Statement</h2>
@@ -43,31 +43,28 @@
   <section class="card">
     <h2>Innovation Claim (Elevator Pitch)</h2>
     <p>
-      This solution goes beyond today’s passwordless tools by combining three innovations:
-      continuous AI anomaly monitoring, a lightweight engagement layer that rewards secure
-      behavior, and a biometric wearable token for tap-to-login. It protects before, during,
-      and after authentication—making security more seamless, proactive, and resilient.
+      This project is innovative because it adds adaptive anomaly detection to a passwordless login
+      flow. Instead of stopping at the biometric scan, the prototype evaluates behavior patterns,
+      flags suspicious sessions, and learns from false-positive feedback to reduce unnecessary alerts over time.
     </p>
   </section>
 
   <section class="card">
     <h2>Project Description</h2>
     <p>
-      The project explores three prototype paths that share a common architecture:
-      (1) an AI + biometric mobile app for passwordless entry with real-time anomaly checks;
-      (2) a credential hub with behavior incentives to reinforce secure habits; and
-      (3) a biometric wearable band that emits encrypted NFC/Bluetooth tokens for
-      frictionless login. The goal is a cohesive ecosystem that eliminates typed passwords
-      while improving post-login protection.
+      The working prototype is intentionally scoped to one core deliverable: a simulated biometric login
+      interface connected to a lightweight anomaly-detection model. After login, the system scores the session
+      using factors such as login time, device familiarity, and location pattern. If the session is flagged,
+      the user can mark it as a false positive, and the prototype adjusts its threshold to demonstrate adaptive behavior.
     </p>
     <div class="grid two">
       <div>
         <h3>Scope & Timeline</h3>
         <ul class="tight">
-          <li><strong>Month 1:</strong> Research, threat model, architecture</li>
-          <li><strong>Months 2–3:</strong> Prototype app + wearable mock, basic AI checks</li>
-          <li><strong>Month 4:</strong> Testing, iteration, usability + security review</li>
-          <li><strong>Month 5:</strong> Showcase build, documentation</li>
+          <li><strong>Phase 1:</strong> Define the problem, prior art, and narrowed prototype scope</li>
+          <li><strong>Phase 2:</strong> Build the simulated biometric login and session-scoring logic</li>
+          <li><strong>Phase 3:</strong> Add false-positive feedback and threshold adjustment behavior</li>
+          <li><strong>Phase 4:</strong> Polish the demo, document the process, and prepare the showcase</li>
         </ul>
       </div>
       <div>
@@ -87,15 +84,15 @@
         <ul class="tight">
           <li><strong>Microsoft Authenticator</strong>: Passwordless/MFA via device biometrics.</li>
           <li><strong>1Password</strong>: Secure credential vault and autofill.</li>
-          <li><strong>YubiKey</strong>: Hardware-based NFC/USB authentication key.</li>
+          <li><strong>Windows Hello / common biometric login flows</strong>: Existing biometric access points that authenticate but do not adapt to false positives the way this prototype does.</li>
         </ul>
       </div>
       <div>
         <h3>How This Differs</h3>
         <ul class="tight">
-          <li>Continuous AI behavior monitoring after login</li>
-          <li>Behavior incentives integrated into the experience</li>
-          <li>Biometric wearable token for seamless tap-to-login</li>
+          <li>Behavior-based anomaly detection tied directly to the login result</li>
+          <li>User feedback loop for false-positive correction</li>
+          <li>Adaptive threshold changes that visibly demonstrate learning behavior</li>
         </ul>
       </div>
     </div>
@@ -108,54 +105,51 @@
   </section>
 
  <section class="card visuals">
+  <!-- Visual gallery for SIP concept art and prototype planning -->
   <h2>Design & Prototype Visuals</h2>
 
   <div class="visual-grid">
     <figure>
       <img src="assets/img/Scan.png" alt="Passwordless login flow prototype">
-      <figcaption>
-        Passwordless login flow showing biometric authentication, AI behavior analysis,
-        and secure session validation.
-      </figcaption>
+      <figcaption>Passwordless login flow showing the scan step and the transition into session evaluation.</figcaption>
     </figure>
 
     <figure>
-      <img src="assets/img/Login.png" alt="Wearable authentication band concept">
-      <figcaption>
-        Concept design of the wearable authentication band used for tap-to-login
-        and continuous reauthentication.
-      </figcaption>
+      <img src="assets/img/Login.png" alt="Prototype login concept">
+      <figcaption>Detailed login concept used to communicate the intended user experience and security status feedback.</figcaption>
     </figure>
 
     <figure>
       <img src="assets/img/General.png" alt="System architecture diagram">
-      <figcaption>
-        High-level system architecture illustrating mobile app, AI services,
-        wearable device, and cloud infrastructure.
-      </figcaption>
+      <figcaption>High-level architecture showing how the app, scoring logic, and user feedback work together.</figcaption>
     </figure>
-  </div>
 
-  <figure>
-      <img src="assets/img/Security.png" alt="Secuirty System Generalization">
-      <figcaption>
-        How the overall security system functions to provide passwordless authentication
-        and continuous protection.
-      </figcaption>
+    <figure>
+      <img src="assets/img/Security.png" alt="Security dashboard concept">
+      <figcaption>Security dashboard concept used to explain session risk, flags, and adaptive response behavior.</figcaption>
     </figure>
   </div>
 
   <p class="ai-disclaimer">
-    <strong>Disclaimer:</strong> Some visuals were generated using AI tools for design
-    exploration purposes.
+    <strong>Disclaimer:</strong> Some visuals were generated using AI tools for concept exploration and were used to communicate intended design direction.
   </p>
 </section>
 
+<section class="card">
+  <!-- Replaces the old placeholder with a concise current brief and live demo link -->
+  <h2>Current SIP Brief & Working Prototype</h2>
+  <p>
+    The approved scope for this project is a working prototype that demonstrates AI-assisted anomaly detection within a passwordless login flow.
+    The prototype simulates a biometric scan, evaluates session context, flags suspicious behavior, and allows the user to correct a false positive so the system can adapt.
+  </p>
+  <p>
+    <strong>Working Prototype:</strong> <a href="prototype.html" target="_blank" rel="noopener">Open the live browser demo</a>
+  </p>
+  <p>
+    <strong>Current status:</strong> The prototype is functional and ready for presentation. Remaining work is focused on documentation, explanation, and showcase polish rather than expanding scope.
+  </p>
+</section>
 
-  <section class="card">
-    <h2>SIP Brief (Week 4)</h2>
-    <p>Placeholder for embedded PDF or a subpage later. Add link when ready.</p>
-  </section>
 </main>
 
 <footer class="site-footer">
@@ -163,7 +157,7 @@
     <small>&copy; <span id="year"></span> Eric Merryman.</small>
   </div>
 </footer>
-<script src="assets/js/main.js"></script>
+<script src="main.js"></script>
 <script>setActive('sip');</script>
 </body>
 </html>

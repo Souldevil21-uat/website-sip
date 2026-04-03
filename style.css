@@ -178,3 +178,62 @@ a:hover{text-decoration:underline}
   background:linear-gradient(90deg, var(--brand), var(--brand-2), var(--accent));
   opacity:.6; filter:saturate(120%);
 }
+
+/* --- Boards and SIP content helpers added for final portfolio cleanup --- */
+.objective-card {
+  margin-top: 1.25rem;
+}
+
+.objective-text {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.evidence-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.evidence-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.evidence-item h3 {
+  margin: 0 0 .4rem;
+}
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.visual-grid figure {
+  margin: 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem;
+}
+
+.visual-grid img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
+.visual-grid figcaption {
+  margin-top: .65rem;
+  color: var(--muted);
+  font-size: .93rem;
+}
+
+.ai-disclaimer {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: .92rem;
+}
