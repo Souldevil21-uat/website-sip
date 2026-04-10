@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameManager System | Project Evidence</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="index.html">EM</a>
+    <div class="nav-right">
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="site-nav" aria-label="Main">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="sip.html" data-nav="sip">SIP</a>
+        <a href="boards.html" data-nav="boards">Boards</a>
+        <a href="projects.html" data-nav="projects">Projects</a>
+        <a href="contact.html" data-nav="contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <h1>GameManager System</h1>
+  <p class="note">
+    This page provides supporting evidence for the GameManager System used in UATanks and explains how it demonstrates system architecture,
+    gameplay support, and software organization within a complete game project.
+  </p>
+
+  <section class="card objective-card">
+    <h2>Project Overview</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>What It Is</h3>
+        <p>
+          The GameManager System is a central controller that helps coordinate major parts of the UATanks project. It manages
+          game states, player and AI registration, spawning logic, score handling, and overall game flow. Instead of letting every
+          system operate independently without structure, the GameManager provides one place for shared control and communication.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Why It Matters</h3>
+        <p>
+          This system matters because larger game projects need a central structure to remain stable and organized. The GameManager
+          reduces confusion between systems, helps track important objects in the scene, and makes it easier to manage the full game
+          loop from startup through active play and end conditions.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>How It Supports the Objectives</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Objective 2</h3>
+        <p>
+          The GameManager System supports Objective 2 because it acts as an architectural backbone for the project. It connects
+          separate gameplay systems such as spawning, score tracking, player control, AI control, and game states into one
+          structured framework.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Objective 4</h3>
+        <p>
+          The GameManager System supports Objective 4 because it was designed as a solution to the problem of managing many
+          moving parts in a game project. It required planning, implementation, testing, and adjustment to ensure the different
+          systems worked together correctly.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Objective 5</h3>
+        <p>
+          The GameManager System supports Objective 5 because it demonstrates development ability in Unity using C#, including
+          object references, game state logic, shared system management, and scripting for a real gameplay environment.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>Major Features</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Player and AI Registration</h3>
+        <p>
+          The system keeps track of active players, AI controllers, and pawns so other systems can access them when needed.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Game State Control</h3>
+        <p>
+          The GameManager handles transitions between menu states, gameplay, and game over conditions to keep the experience organized.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Spawning and Tracking</h3>
+        <p>
+          The system supports player spawning, AI spawning, and the overall tracking of active entities in the level.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>Project Proof</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Supporting Evidence</h3>
+        <p>
+          This system is part of the broader UATanks project and can be supported with screenshots of the Unity hierarchy,
+          inspector, gameplay scene, or code showing centralized game control logic.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>Return to Boards</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Navigation</h3>
+        <p><a href="boards.html">Back to Boards</a></p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <small>&copy; <span id="year"></span> Eric Merryman.</small>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+<script>setActive('projects');</script>
+</body>
+</html>
