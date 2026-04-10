@@ -3,52 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Passwordless Prototype – Behavior Check</title>
+  <title>Passwordless AI Prototype</title>
   <link rel="stylesheet" href="prototype.css" />
 </head>
 <body>
   <main class="wrap">
+
     <header class="card">
-      <h1>Passwordless Login Prototype</h1>
-      <p class="sub">
-        Simulated biometric login + behavior-based anomaly detection with false-positive feedback.
-      </p>
-      <p class="small">
-        Note: This is a working prototype using a lightweight scoring model to demonstrate AI-like adaptation.
-      </p>
-    </header>
+  <div class="result-pill">Prototype Demo</div>
+  <h1>AI Passwordless Login</h1>
+  <p class="sub">
+    This prototype simulates biometric authentication combined with adaptive behavioral analysis.
+    It evaluates login risk, explains why a session was flagged, and adjusts sensitivity based on feedback.
+  </p>
+</header>
 
     <section class="card">
-      <h2>Step 1: Simulate Biometric Scan</h2>
+      <h2>Step 1: Biometric Scan</h2>
       <button id="btnScan" class="btn">Scan Biometrics</button>
-      <p id="scanStatus" class="status">Waiting for scan…</p>
+      <p id="scanStatus">Waiting for scan...</p>
     </section>
 
     <section class="card">
-      <h2>Step 2: Session Context</h2>
+      <h2>Step 2: Session Inputs</h2>
 
       <div class="grid">
         <label>
           Login Time
           <select id="loginTime">
-            <option value="normal">Normal (8am–7pm)</option>
-            <option value="late">Late Night (11pm–5am)</option>
+            <option value="normal">Normal</option>
+            <option value="late">Late Night</option>
           </select>
         </label>
 
         <label>
           Device
           <select id="device">
-            <option value="known">Known Device</option>
-            <option value="new">New Device</option>
+            <option value="known">Known</option>
+            <option value="new">New</option>
           </select>
         </label>
 
         <label>
           Location
           <select id="location">
-            <option value="usual">Usual Area</option>
-            <option value="unusual">Unusual / Distant</option>
+            <option value="usual">Usual</option>
+            <option value="unusual">Unusual</option>
+          </select>
+        </label>
+
+        <label>
+          Typing Pattern
+          <select id="typing">
+            <option value="normal">Normal</option>
+            <option value="weird">Unusual</option>
           </select>
         </label>
       </div>
@@ -57,27 +65,27 @@
     </section>
 
     <section class="card">
-      <h2>Result</h2>
-      <div class="result">
-        <p><strong>Risk Score:</strong> <span id="riskScore">—</span></p>
-        <p><strong>Decision:</strong> <span id="decision">—</span></p>
-        <p><strong>Current Threshold:</strong> <span id="threshold">—</span></p>
-      </div>
+      <h2>AI Result</h2>
+
+      <p><strong>Risk Score:</strong> <span id="riskScore">—</span></p>
+      <p><strong>Decision:</strong> <span id="decision">—</span></p>
+      <p><strong>Threshold:</strong> <span id="threshold">—</span></p>
+
+      <h3>Why?</h3>
+      <ul id="factors"></ul>
 
       <div class="actions">
-        <button id="btnFalsePositive" class="btn secondary" disabled>Mark False Positive</button>
+        <button id="btnFalsePositive" class="btn secondary" disabled>False Positive</button>
+        <button id="btnThreat" class="btn secondary" disabled>Confirmed Threat</button>
         <button id="btnReset" class="btn ghost">Reset</button>
       </div>
-
-      <p class="small">
-        Marking a false positive adjusts the threshold to reduce future unnecessary flags (adaptive behavior).
-      </p>
     </section>
 
     <section class="card">
       <h2>Audit Log</h2>
-      <ul id="log" class="log"></ul>
+      <ul id="log"></ul>
     </section>
+
   </main>
 
   <script src="prototype.js"></script>
