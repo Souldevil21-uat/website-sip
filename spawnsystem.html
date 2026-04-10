@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spawn System | Project Evidence</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="index.html">EM</a>
+    <div class="nav-right">
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme">Theme</button>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="site-nav" aria-label="Main">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="sip.html" data-nav="sip">SIP</a>
+        <a href="boards.html" data-nav="boards">Boards</a>
+        <a href="projects.html" data-nav="projects">Projects</a>
+        <a href="contact.html" data-nav="contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Spawn System</h1>
+  <p class="note">
+    This page provides supporting evidence for the Spawn System used in UATanks and explains how it supports gameplay flow,
+    variety, and system logic.
+  </p>
+
+  <section class="card objective-card">
+    <h2>Project Overview</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>What It Is</h3>
+        <p>
+          The Spawn System controls when and where players, AI enemies, and other runtime objects appear in the game. It helps
+          ensure that important elements are created at the correct time and in suitable positions during play.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Why It Matters</h3>
+        <p>
+          This system matters because spawning strongly affects pacing, fairness, and variety. It also helps satisfy project
+          requirements related to runtime instantiation rather than relying on objects that already exist in the scene.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>How It Supports the Objectives</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Objective 1</h3>
+        <p>
+          The Spawn System supports Objective 1 because it helps create a complete playable experience where AI and players
+          appear as part of the game flow instead of remaining static.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Objective 3</h3>
+        <p>
+          The Spawn System supports Objective 3 because it uses logic to determine spawn timing, spawn positions, and randomized
+          behavior, making it an algorithm-driven gameplay support system.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Objective 2</h3>
+        <p>
+          The Spawn System supports Objective 2 because it is part of the infrastructure that keeps the larger game project
+          organized and functioning correctly at runtime.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>Major Features</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Runtime Instantiation</h3>
+        <p>
+          Game objects are created during play rather than existing in the level from the start.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Randomized AI Amounts</h3>
+        <p>
+          The number of AI tanks can vary between playthroughs, increasing unpredictability and replay variety.
+        </p>
+      </article>
+
+      <article class="evidence-item">
+        <h3>Respawn Support</h3>
+        <p>
+          The system can be used to bring back AI or other gameplay elements after destruction or collection.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card objective-card">
+    <h2>Return to Boards</h2>
+    <div class="evidence-list">
+      <article class="evidence-item">
+        <h3>Navigation</h3>
+        <p><a href="boards.html">Back to Boards</a></p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <small>&copy; <span id="year"></span> Eric Merryman.</small>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+<script>setActive('projects');</script>
+</body>
+</html>
