@@ -10,6 +10,34 @@
 
   <!-- External stylesheet for styling the page -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Small page-specific styling for the image gallery -->
+  <style>
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .image-proof {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .image-proof img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .image-proof h3 {
+      margin-bottom: 8px;
+    }
+  </style>
 </head>
 <body>
 
@@ -47,15 +75,85 @@
   <!-- Page title and explanation of purpose -->
   <h1>Boards — Game Programming Objectives</h1>
   <p class="note">
-    The objective language below follows the current University of Advancing Technology Game Programming degree objectives.
-    Each section lists completed work and explains how that work demonstrates the objective rather than only describing the project.
+    The objective language below follows the University of Advancing Technology Game Programming degree objectives,
+    rewritten to reflect understanding while still preserving the original meaning.
   </p>
 
-  <!-- IMPORTANT NOTE FOR GRADING -->
   <p class="note">
-    Each project listed below links to a dedicated subpage that includes additional explanations, screenshots, and supporting
-    evidence to fully demonstrate completion of each objective.
+    Each project listed below links to a dedicated subpage that includes additional explanations and supporting
+    evidence. This page also includes visual proof from several major projects used throughout the objectives.
   </p>
+
+  <!-- ================= PROJECT EVIDENCE IMAGES ================= -->
+  <section class="card objective-card">
+    <h2>Project Evidence and Visual Proof</h2>
+
+    <p class="objective-text">
+      The screenshots below provide direct visual evidence of several of the projects referenced throughout the objectives,
+      including the UATanks Unity project, the Unreal Engine driving system, the SkillSwap Hub web application, and the
+      Passwordless Security SIP prototype.
+    </p>
+
+    <div class="image-grid">
+
+      <article class="image-proof">
+        <img src="assets/images/Tanks.PNG" alt="UATanks gameplay screenshot" />
+        <h3>UATanks Gameplay</h3>
+        <p>
+          This image supports the UATanks project by showing a playable tank-based Unity game environment with implemented gameplay systems.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/Movement.png" alt="Driving system movement screenshot" />
+        <h3>Driving System</h3>
+        <p>
+          This image supports the Unreal Engine driving project by showing the vehicle prototype and movement-focused gameplay setup.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/skillswap.png" alt="SkillSwap Hub screenshot" />
+        <h3>SkillSwap Hub</h3>
+        <p>
+          This image supports the SkillSwap Hub project by showing the browser-based interface and interactive skill-matching layout.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/General.png" alt="General SIP diagram" />
+        <h3>SIP General Concept</h3>
+        <p>
+          This image supports the Passwordless Security SIP prototype by showing the overall system concept and connected authentication flow.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/Login.png" alt="SIP login screen" />
+        <h3>SIP Login Screen</h3>
+        <p>
+          This image supports the SIP prototype by showing the login portion of the interface and the prototype's authentication concept.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/Scan.png" alt="SIP scan screen" />
+        <h3>SIP Scan Screen</h3>
+        <p>
+          This image supports the SIP prototype by showing a second interface state tied to scanning and secure authentication behavior.
+        </p>
+      </article>
+
+      <article class="image-proof">
+        <img src="assets/images/Security.png" alt="SIP security screen" />
+        <h3>SIP Security Screen</h3>
+        <p>
+          This image supports the SIP prototype by showing the security-focused portion of the design and reinforces the technical direction of the system.
+        </p>
+      </article>
+
+    </div>
+  </section>
 
   <!-- ================= OBJECTIVE 1 ================= -->
   <section class="card objective-card">
@@ -63,7 +161,8 @@
     <h2>Objective 1</h2>
 
     <p class="objective-text">
-      Implement multiple completed games, including 3D games, using common tools, languages, and software for web, console, PC, or mobile platforms.
+      Create and implement multiple completed game experiences, including 3D games, using widely used tools,
+      programming languages, and software platforms such as web, console, PC, or mobile environments.
     </p>
 
     <div class="evidence-list">
@@ -71,40 +170,41 @@
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks (Unity / C#)</a></h3>
         <p>
-          UATanks demonstrates this objective by showing a completed 3D game prototype built in Unity with C#. The project includes player movement,
-          combat, AI enemies, pickups, scoring, and game flow systems, which together show the creation of a playable game using common PC game development tools.
+          This demonstrates the objective because UATanks is a completed 3D Unity game project that includes player movement,
+          AI enemies, combat, pickups, scoring, and game flow systems, proving the ability to create a playable experience
+          using a common engine and language.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="driving.html">Driving System (Unreal Engine)</a></h3>
         <p>
-          The Driving System project supports this objective by implementing a 3D vehicle experience in Unreal Engine using blueprint-based logic and
-          modern input systems. It shows that multiple engines and toolsets can be used to create functional gameplay experiences.
+          This demonstrates the objective because the Driving System shows a second 3D gameplay experience created in Unreal Engine,
+          proving the ability to work in more than one major development environment while still producing interactive results.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub</a></h3>
         <p>
-          Although SkillSwap Hub is a web project instead of a traditional game, it still demonstrates interactive software implementation using
-          HTML, CSS, and JavaScript. It shows the ability to build a functional digital experience on a different platform using common web tools.
+          This demonstrates the objective because SkillSwap Hub is an interactive software project built with HTML, CSS, and JavaScript,
+          showing the ability to create a complete digital experience on the web platform using standard development tools.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="sipprototype.html">Passwordless Security SIP Prototype</a></h3>
         <p>
-          The SIP prototype demonstrates interactive system design and implementation through a structured prototype that models user login,
-          risk analysis, and interface flow. While not a game, it reflects the same technical ability to create complete digital experiences.
+          This demonstrates the objective because the SIP prototype presents a structured and functional interactive system with multiple
+          screens and user flow, showing the ability to build a complete digital product even outside a traditional game engine.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website</a></h3>
         <p>
-          The portfolio website supports this objective by presenting completed digital work through a structured and functional web platform.
-          It demonstrates the ability to build interactive software artifacts beyond game engines while still using industry-standard tools.
+          This demonstrates the objective because the portfolio website is itself a completed digital product that organizes content,
+          navigation, and project presentation into a usable interactive platform.
         </p>
       </article>
 
@@ -117,7 +217,7 @@
     <h2>Objective 2</h2>
 
     <p class="objective-text">
-      Design, develop, and implement the architecture and infrastructure needed to support a complete game project.
+      Plan, design, and develop the systems, structure, and supporting architecture required to build and maintain a complete game project from start to finish.
     </p>
 
     <div class="evidence-list">
@@ -125,40 +225,40 @@
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks (Unity / C#)</a></h3>
         <p>
-          UATanks demonstrates this objective through organized systems for movement, health, AI, projectiles, spawning, pickups, scoring,
-          and game management. That structure shows how a complete project depends on stable and modular architecture.
+          This demonstrates the objective because UATanks uses modular systems for movement, health, AI, projectiles, spawning,
+          pickups, and game management, showing an organized structure instead of one oversized script.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="driving.html">Driving System (Unreal Engine)</a></h3>
         <p>
-          The Driving System supports this objective through its setup of player input, vehicle behavior, acceleration, steering,
-          and blueprint logic. These connected systems form the infrastructure needed to support a complete vehicle prototype.
+          This demonstrates the objective because the Driving System organizes input mapping, movement response, vehicle behavior,
+          and blueprint logic into a connected structure that supports the full prototype.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="sipprototype.html">SIP Website & Prototype</a></h3>
         <p>
-          The SIP website and prototype meet this objective through shared page structure, organized navigation, reusable styling,
-          and interactive JavaScript behavior. The project shows how software architecture supports a clear and complete user experience.
+          This demonstrates the objective because the SIP project uses structured navigation, shared styling, staged screens,
+          and organized front-end behavior to support a complete prototype experience.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub</a></h3>
         <p>
-          SkillSwap Hub supports this objective by separating layout, styling, and matching logic into an organized structure.
-          That separation makes the project easier to maintain, test, and extend, which reflects strong architectural planning.
+          This demonstrates the objective because SkillSwap Hub separates page structure, visual design, and matching logic
+          into a maintainable web application architecture.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website</a></h3>
         <p>
-          The portfolio website demonstrates this objective through consistent navigation, reusable design elements, and page organization
-          that support multiple sections of content inside one complete project framework.
+          This demonstrates the objective because the portfolio uses reusable design, consistent navigation, and organized page structure
+          to support a larger multi-page project.
         </p>
       </article>
 
@@ -171,7 +271,7 @@
     <h2>Objective 3</h2>
 
     <p class="objective-text">
-      Implement and analyze fundamental data structures and algorithms associated with game applications supporting gameplay mechanics.
+      Apply and evaluate core data structures and algorithms that are commonly used in game development to support gameplay systems and interactive mechanics.
     </p>
 
     <div class="evidence-list">
@@ -179,40 +279,40 @@
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks (AI, Spawning, and Combat Logic)</a></h3>
         <p>
-          UATanks supports this objective through AI behavior, state-driven logic, projectile interaction, collision checks, spawning,
-          and score handling. These systems depend on gameplay algorithms and structured data relationships.
+          This demonstrates the objective because UATanks relies on AI logic, projectile interaction, collision handling,
+          spawn systems, and score tracking, all of which require algorithmic thinking and structured system relationships.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="driving.html">Driving System (Movement Logic)</a></h3>
         <p>
-          The Driving System demonstrates algorithmic thinking through steering calculations, acceleration control, braking behavior,
-          and input-response logic. These are core interactive systems that require step-by-step mechanical reasoning.
+          This demonstrates the objective because the Driving System uses acceleration, steering, braking, and input-response calculations
+          that depend on interactive logic and step-by-step mechanical behavior.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub (Matching Logic)</a></h3>
         <p>
-          SkillSwap Hub supports this objective through conditional checks and comparison logic used to match user-entered skills.
-          This demonstrates structured decision making and practical algorithm implementation in an interactive application.
+          This demonstrates the objective because SkillSwap Hub compares user-entered skills using condition-based logic,
+          showing how algorithmic decision making can power interactive results.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="sipprototype.html">Passwordless Security SIP Prototype</a></h3>
         <p>
-          The SIP prototype supports this objective through rule-based risk scoring that evaluates time, location, and device patterns.
-          That model demonstrates threshold logic and system-driven decision making similar to adaptive mechanics.
+          This demonstrates the objective because the SIP prototype uses rule-based risk scoring that evaluates patterns such as time,
+          location, and device context, reflecting structured logic and adaptive system behavior.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website (Navigation and Structure)</a></h3>
         <p>
-          The portfolio site supports this objective on a broader software level by using organized navigation and structured page behavior.
-          While simpler than gameplay logic, it still demonstrates how information can be managed through consistent digital structure.
+          This demonstrates the objective because the portfolio uses structured navigation and organized content flow,
+          showing how digital systems can be arranged logically to guide user interaction.
         </p>
       </article>
 
@@ -225,7 +325,7 @@
     <h2>Objective 4</h2>
 
     <p class="objective-text">
-      Use software development processes to analyze a project problem and to design, build, and test a corresponding software solution.
+      Use a structured software development process to analyze a problem, design an appropriate solution, build the system, and test it to ensure it functions correctly.
     </p>
 
     <div class="evidence-list">
@@ -233,40 +333,40 @@
       <article class="evidence-item">
         <h3><a href="sipprototype.html">Passwordless Security SIP Prototype</a></h3>
         <p>
-          This project strongly demonstrates the objective by beginning with a real problem, narrowing the scope, developing a prototype,
-          and improving the solution through review, testing, and iteration.
+          This demonstrates the objective because the SIP project began with a real security problem, moved through scope refinement,
+          prototype design, implementation, and revision, and was improved through feedback and review.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub (JavaScript Web App)</a></h3>
         <p>
-          SkillSwap Hub supports this objective by identifying a user interaction problem, designing a solution, building the interface,
-          testing the behavior, and revising the application for clarity and usability.
+          This demonstrates the objective because SkillSwap Hub started as a user interaction problem and was turned into a working solution
+          through planning, coding, testing, and interface refinement.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks</a></h3>
         <p>
-          UATanks supports this objective through the repeated design, building, debugging, and refinement of gameplay systems such as AI,
-          movement, projectiles, and powerups. The project reflects the full software development cycle in a game environment.
+          This demonstrates the objective because UATanks required repeated design, debugging, testing, and improvement of systems such as AI,
+          movement, projectiles, and powerups throughout development.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="driving.html">Driving System</a></h3>
         <p>
-          The Driving System demonstrates this objective by identifying movement and control goals, implementing them in Unreal Engine,
-          testing the results in real time, and adjusting the system to improve how the vehicle feels and responds.
+          This demonstrates the objective because the Driving System involved defining control goals, implementing a movement solution,
+          testing it in real time, and refining the vehicle behavior based on results.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website</a></h3>
         <p>
-          The portfolio website supports this objective by analyzing the need for professional presentation, designing a complete site,
-          testing navigation and layout behavior, and refining the final result for external review.
+          This demonstrates the objective because the portfolio required identifying presentation needs, planning site structure,
+          building the pages, testing navigation, and refining the final result for outside review.
         </p>
       </article>
 
@@ -279,7 +379,7 @@
     <h2>Objective 5</h2>
 
     <p class="objective-text">
-      Demonstrate development skills using multiple programming languages, development environments, and platforms.
+      Demonstrate development ability across multiple programming languages, tools, environments, and platforms, including advanced or experimental concepts related to game programming.
     </p>
 
     <div class="evidence-list">
@@ -287,40 +387,40 @@
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks</a></h3>
         <p>
-          UATanks demonstrates development in Unity using C#, showing experience with engine scripting, gameplay systems,
-          editor workflows, and object-based game development.
+          This demonstrates the objective because UATanks was built in Unity using C#, showing skill in engine scripting,
+          editor workflows, and object-based game programming.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="driving.html">Driving System</a></h3>
         <p>
-          The Driving System demonstrates development in Unreal Engine using blueprint logic and engine-based testing,
-          which shows flexibility across a second major development environment.
+          This demonstrates the objective because the Driving System was built in Unreal Engine using blueprint logic,
+          showing flexibility across a second major game development environment.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub</a></h3>
         <p>
-          SkillSwap Hub demonstrates front-end development using HTML, CSS, and JavaScript in a browser-based environment,
-          expanding technical ability beyond traditional game engines.
+          This demonstrates the objective because SkillSwap Hub uses HTML, CSS, and JavaScript in a browser-based environment,
+          expanding development ability beyond game engines alone.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="sipprototype.html">SIP Website & Prototype</a></h3>
         <p>
-          The SIP prototype supports this objective through cross-disciplinary development that combines web technologies,
-          interface design, technical planning, and experimental security concepts.
+          This demonstrates the objective because the SIP project combines interface design, web development,
+          and experimental security concepts into one cross-disciplinary prototype.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website</a></h3>
         <p>
-          The portfolio site demonstrates additional web development skills through responsive layout, structured navigation,
-          and polished presentation across multiple pages and devices.
+          This demonstrates the objective because the portfolio shows additional front-end development skills through responsive design,
+          multi-page navigation, and polished presentation.
         </p>
       </article>
 
@@ -333,7 +433,7 @@
     <h2>Objective 6</h2>
 
     <p class="objective-text">
-      Establish collaboration, mentorship, and professional leadership skills.
+      Develop collaboration, mentorship, and professional leadership skills by working with others and presenting polished, completed projects to a professional standard.
     </p>
 
     <div class="evidence-list">
@@ -341,40 +441,40 @@
       <article class="evidence-item">
         <h3><a href="sipprototype.html">SIP Process & Reviews</a></h3>
         <p>
-          The SIP process demonstrates collaboration through review cycles, mentorship, feedback, scope adjustments,
-          and refinement based on professional guidance.
+          This demonstrates the objective because the SIP process involved mentorship, review cycles, feedback, scope adjustments,
+          and improvement based on outside guidance.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="portfolio.html">Portfolio Website</a></h3>
         <p>
-          The portfolio website demonstrates professional leadership by organizing work clearly and presenting polished technical evidence
-          for outside review by faculty and future employers.
+          This demonstrates the objective because the portfolio organizes technical work in a polished and professional way
+          for outside review by faculty and potential employers.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="boards.html">Boards Presentation Preparation</a></h3>
         <p>
-          Preparing the Boards materials supports this objective by requiring clear communication, structured presentation,
-          and the ability to explain technical work to an academic and professional audience.
+          This demonstrates the objective because preparing the Boards page requires structured communication,
+          thoughtful presentation, and the ability to explain technical work clearly.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="skillswaphub.html">SkillSwap Hub Presentation</a></h3>
         <p>
-          SkillSwap Hub supports this objective by demonstrating how software can be organized and communicated in a polished way,
-          showing attention to usability, readability, and presentation quality.
+          This demonstrates the objective because SkillSwap Hub is presented in a polished format that emphasizes readability,
+          usability, and clarity for an outside audience.
         </p>
       </article>
 
       <article class="evidence-item">
         <h3><a href="uatanks.html">UATanks Development Process</a></h3>
         <p>
-          UATanks supports this objective by showing persistence, technical growth, and the ability to develop a more polished game project
-          over time through repeated improvement and project-focused discipline.
+          This demonstrates the objective because UATanks shows continued growth, persistence, and repeated refinement over time,
+          reflecting discipline and professional follow-through.
         </p>
       </article>
 
