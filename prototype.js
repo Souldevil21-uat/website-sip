@@ -145,8 +145,14 @@ btnEvaluate.onclick = () => {
 
   render(score, decision, factors);
 
-  btnFalsePositive.disabled = decision !== "FLAGGED";
-  btnThreat.disabled = decision !== "FLAGGED";
+// Always re-enable buttons on a new evaluation
+if (decision === "FLAGGED") {
+  btnFalsePositive.disabled = false;
+  btnThreat.disabled = false;
+} else {
+  btnFalsePositive.disabled = true;
+  btnThreat.disabled = true;
+}
 
   log(`Behavioral risk analysis completed → ${decision} (Score: ${score})`);
 };
@@ -167,8 +173,7 @@ btnThreat.onclick = () => {
 
   updateModelStatus();
 
-  log("Threat confirmed → system sensitivity increased");
-  btnThreat.disabled = true;
+  log(`Threat confirmed → system sensitivity increased (Total: ${confirmedThreats})`);
 };
 
 btnReset.onclick = () => {
