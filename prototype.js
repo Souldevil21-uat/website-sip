@@ -1,3 +1,4 @@
+// ELEMENTS
 const btnScan = document.getElementById("btnScan");
 const btnEvaluate = document.getElementById("btnEvaluate");
 const btnFalsePositive = document.getElementById("btnFalsePositive");
@@ -21,6 +22,7 @@ const fpCountEl = document.getElementById("fpCount");
 const threatCountEl = document.getElementById("threatCount");
 const sensitivityEl = document.getElementById("sensitivity");
 
+// STATE
 let threshold = 60;
 let scanned = false;
 let falsePositives = 0;
@@ -28,12 +30,14 @@ let confirmedThreats = 0;
 let feedbackApplied = false;
 let currentDecision = "";
 
+// LOG FUNCTION
 function log(message) {
   const li = document.createElement("li");
   li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
   logEl.prepend(li);
 }
 
+// RISK MODEL
 function computeRisk() {
   let score = 0;
   let factors = [];
@@ -70,6 +74,7 @@ function computeRisk() {
   };
 }
 
+// RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
   thresholdEl.textContent = threshold;
@@ -94,6 +99,7 @@ function render(score, decision, factors) {
   });
 }
 
+// MODEL STATUS
 function updateModelStatus() {
   fpCountEl.textContent = falsePositives;
   threatCountEl.textContent = confirmedThreats;
@@ -112,6 +118,7 @@ function updateModelStatus() {
   }
 }
 
+// BUTTON CONTROL
 function disableFeedbackButtons() {
   btnFalsePositive.disabled = true;
   btnThreat.disabled = true;
@@ -125,6 +132,8 @@ function updateFeedbackButtons() {
     disableFeedbackButtons();
   }
 }
+
+// EVENTS
 
 btnScan.onclick = () => {
   scanned = true;
@@ -201,6 +210,7 @@ btnReset.onclick = () => {
   log("System reset");
 };
 
+// INIT
 thresholdEl.textContent = threshold;
 updateModelStatus();
 disableFeedbackButtons();
