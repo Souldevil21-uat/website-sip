@@ -26,6 +26,7 @@ let scanned = false;
 let falsePositives = 0;
 let confirmedThreats = 0;
 let feedbackApplied = false;
+let currentDecision = "";
 
 function log(message) {
   const li = document.createElement("li");
@@ -94,15 +95,8 @@ function render(score, decision, factors) {
 }
 
 function updateModelStatus() {
-  if (fpCountEl) {
-    fpCountEl.textContent = falsePositives;
-  }
-
-  if (threatCountEl) {
-    threatCountEl.textContent = confirmedThreats;
-  }
-
-  if (!sensitivityEl) return;
+  fpCountEl.textContent = falsePositives;
+  threatCountEl.textContent = confirmedThreats;
 
   sensitivityEl.className = "";
 
@@ -123,8 +117,8 @@ function disableFeedbackButtons() {
   btnThreat.disabled = true;
 }
 
-function enableFeedbackButtonsForDecision(decision) {
-  if (decision === "FLAGGED" && !feedbackApplied) {
+function updateFeedbackButtons() {
+  if (currentDecision === "FLAGGED" && feedbackApplied === false) {
     btnFalsePositive.disabled = false;
     btnThreat.disabled = false;
   } else {
@@ -146,26 +140,24 @@ btnEvaluate.onclick = () => {
   const score = result.score;
   const factors = result.factors;
 
-  let decision = "";
-
   if (score < threshold - 15) {
-    decision = "ALLOW";
+    currentDecision = "ALLOW";
   } else if (score < threshold) {
-    decision = "STEP-UP AUTH REQUIRED";
+    currentDecision = "STEP-UP AUTH REQUIRED";
   } else {
-    decision = "FLAGGED";
+    currentDecision = "FLAGGED";
   }
 
   feedbackApplied = false;
 
-  render(score, decision, factors);
-  enableFeedbackButtonsForDecision(decision);
+  render(score, currentDecision, factors);
+  updateFeedbackButtons();
 
-  log(`Behavioral risk analysis completed → ${decision} (Score: ${score})`);
+  log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
 };
 
 btnFalsePositive.onclick = () => {
-  if (feedbackApplied) return;
+  if (feedbackApplied || currentDecision !== "FLAGGED") return;
 
   falsePositives++;
   threshold = Math.min(90, threshold + 5);
@@ -173,13 +165,13 @@ btnFalsePositive.onclick = () => {
 
   updateModelStatus();
   thresholdEl.textContent = threshold;
-  disableFeedbackButtons();
+  updateFeedbackButtons();
 
   log(`False positive detected → system sensitivity reduced (Total: ${falsePositives})`);
 };
 
 btnThreat.onclick = () => {
-  if (feedbackApplied) return;
+  if (feedbackApplied || currentDecision !== "FLAGGED") return;
 
   confirmedThreats++;
   threshold = Math.max(40, threshold - 5);
@@ -187,7 +179,7 @@ btnThreat.onclick = () => {
 
   updateModelStatus();
   thresholdEl.textContent = threshold;
-  disableFeedbackButtons();
+  updateFeedbackButtons();
 
   log(`Threat confirmed → system sensitivity increased (Total: ${confirmedThreats})`);
 };
@@ -195,6 +187,7 @@ btnThreat.onclick = () => {
 btnReset.onclick = () => {
   scanned = false;
   feedbackApplied = false;
+  currentDecision = "";
 
   scanStatus.textContent = "Waiting for scan...";
   btnEvaluate.disabled = true;
@@ -210,4 +203,5 @@ btnReset.onclick = () => {
 
 thresholdEl.textContent = threshold;
 updateModelStatus();
+disableFeedbackButtons();
 log("Prototype ready");
