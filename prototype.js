@@ -160,19 +160,14 @@ if (decision === "FLAGGED") {
 btnFalsePositive.onclick = () => {
   threshold = Math.min(90, threshold + 5);
   falsePositives++;
-
   updateModelStatus();
-
-  log("False positive detected → system sensitivity reduced");
-  btnFalsePositive.disabled = true;
+  log(`False positive detected → system sensitivity reduced (Total: ${falsePositives})`);
 };
 
 btnThreat.onclick = () => {
   threshold = Math.max(40, threshold - 5);
   confirmedThreats++;
-
   updateModelStatus();
-
   log(`Threat confirmed → system sensitivity increased (Total: ${confirmedThreats})`);
 };
 
