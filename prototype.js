@@ -17,6 +17,13 @@ const thresholdEl = document.getElementById("threshold");
 const factorsEl = document.getElementById("factors");
 const logEl = document.getElementById("log");
 
+const fpCountEl = document.getElementById("fpCount");
+const threatCountEl = document.getElementById("threatCount");
+const sensitivityEl = document.getElementById("sensitivity");
+
+let falsePositives = 0;
+let confirmedThreats = 0;
+
 let threshold = 60;
 let scanned = false;
 let lastScore = null;
@@ -78,6 +85,19 @@ function render(score, decision, factors) {
   });
 }
 
+function updateModelStatus() {
+  fpCountEl.textContent = falsePositives;
+  threatCountEl.textContent = confirmedThreats;
+
+  if (threshold >= 75) {
+    sensitivityEl.textContent = "Low (Less Sensitive)";
+  } else if (threshold <= 50) {
+    sensitivityEl.textContent = "High (More Sensitive)";
+  } else {
+    sensitivityEl.textContent = "Moderate";
+  }
+}
+
 btnScan.onclick = () => {
   scanned = true;
   scanStatus.textContent = "Biometric scan complete";
@@ -115,12 +135,20 @@ btnEvaluate.onclick = () => {
 
 btnFalsePositive.onclick = () => {
   threshold = Math.min(90, threshold + 5);
+  falsePositives++;
+
+  updateModelStatus();
+
   log("False positive → system less sensitive");
   btnFalsePositive.disabled = true;
 };
 
 btnThreat.onclick = () => {
   threshold = Math.max(40, threshold - 5);
+  confirmedThreats++;
+
+  updateModelStatus();
+
   log("Threat confirmed → system more sensitive");
   btnThreat.disabled = true;
 };
@@ -144,3 +172,5 @@ btnReset.onclick = () => {
 
 thresholdEl.textContent = threshold;
 log("Prototype ready");
+
+updateModelStatus();
