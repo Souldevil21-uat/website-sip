@@ -34,27 +34,34 @@ function computeRisk() {
 
   if (loginTime.value === "late") {
     score += 30;
-    factors.push("Late night login");
+    factors.push("Late night login detected");
   }
 
   if (device.value === "new") {
     score += 30;
-    factors.push("New device");
+    factors.push("New or unrecognized device");
   }
 
   if (locationSel.value === "unusual") {
     score += 30;
-    factors.push("Unusual location");
+    factors.push("Login from unusual location");
   }
 
   if (typing.value === "weird") {
     score += 20;
-    factors.push("Abnormal typing pattern");
+    factors.push("Typing pattern anomaly detected");
   }
 
   score += Math.floor(Math.random() * 6);
 
-  return { score: Math.min(score, 100), factors };
+  if (factors.length === 0) {
+    factors.push("All behavioral signals fall within normal thresholds.");
+  }
+
+  return {
+    score: Math.min(score, 100),
+    factors: factors
+  };
 }
 
 function render(score, decision, factors) {
@@ -63,9 +70,10 @@ function render(score, decision, factors) {
   thresholdEl.textContent = threshold;
 
   factorsEl.innerHTML = "";
-  factors.forEach(f => {
+
+  factors.forEach(factor => {
     const li = document.createElement("li");
-    li.textContent = f;
+    li.textContent = factor;
     factorsEl.appendChild(li);
   });
 }
