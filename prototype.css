@@ -261,4 +261,14 @@ strong {
   .btn {
     width: 100%;
   }
+
+  /* Decision colors */
+.allow { color: #58e6a9; font-weight: 800; }
+.stepup { color: #ffcc66; font-weight: 800; }
+.flagged { color: #ff6b6b; font-weight: 800; }
+
+/* Sensitivity colors */
+.low { color: #58e6a9; font-weight: 700; }
+.moderate { color: #ffcc66; font-weight: 700; }
+.high { color: #ff6b6b; font-weight: 700; }
 }

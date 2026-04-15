@@ -1,3 +1,4 @@
+// ELEMENTS
 const btnScan = document.getElementById("btnScan");
 const btnEvaluate = document.getElementById("btnEvaluate");
 const btnFalsePositive = document.getElementById("btnFalsePositive");
@@ -21,20 +22,20 @@ const fpCountEl = document.getElementById("fpCount");
 const threatCountEl = document.getElementById("threatCount");
 const sensitivityEl = document.getElementById("sensitivity");
 
+// STATE
+let threshold = 60;
+let scanned = false;
 let falsePositives = 0;
 let confirmedThreats = 0;
 
-let threshold = 60;
-let scanned = false;
-let lastScore = null;
-let lastDecision = null;
-
+// LOG FUNCTION
 function log(message) {
   const li = document.createElement("li");
   li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
   logEl.prepend(li);
 }
 
+// RISK MODEL
 function computeRisk() {
   let score = 0;
   let factors = [];
@@ -71,13 +72,25 @@ function computeRisk() {
   };
 }
 
+// RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
-  decisionEl.textContent = decision;
   thresholdEl.textContent = threshold;
 
-  factorsEl.innerHTML = "";
+  // COLOR DECISION
+  decisionEl.className = "";
+  if (decision === "ALLOW") {
+    decisionEl.classList.add("allow");
+  } else if (decision === "STEP-UP AUTH REQUIRED") {
+    decisionEl.classList.add("stepup");
+  } else {
+    decisionEl.classList.add("flagged");
+  }
 
+  decisionEl.textContent = decision;
+
+  // FACTORS
+  factorsEl.innerHTML = "";
   factors.forEach(factor => {
     const li = document.createElement("li");
     li.textContent = factor;
@@ -85,18 +98,26 @@ function render(score, decision, factors) {
   });
 }
 
+// MODEL STATUS
 function updateModelStatus() {
   fpCountEl.textContent = falsePositives;
   threatCountEl.textContent = confirmedThreats;
 
+  sensitivityEl.className = "";
+
   if (threshold >= 75) {
     sensitivityEl.textContent = "Low (Less Sensitive)";
+    sensitivityEl.classList.add("low");
   } else if (threshold <= 50) {
     sensitivityEl.textContent = "High (More Sensitive)";
+    sensitivityEl.classList.add("high");
   } else {
     sensitivityEl.textContent = "Moderate";
+    sensitivityEl.classList.add("moderate");
   }
 }
+
+// BUTTON EVENTS
 
 btnScan.onclick = () => {
   scanned = true;
@@ -122,15 +143,12 @@ btnEvaluate.onclick = () => {
     decision = "FLAGGED";
   }
 
-  lastScore = score;
-  lastDecision = decision;
-
   render(score, decision, factors);
 
   btnFalsePositive.disabled = decision !== "FLAGGED";
   btnThreat.disabled = decision !== "FLAGGED";
 
-  log(`Session evaluated: ${decision} (Score ${score})`);
+  log(`Behavioral risk analysis completed → ${decision} (Score: ${score})`);
 };
 
 btnFalsePositive.onclick = () => {
@@ -139,7 +157,7 @@ btnFalsePositive.onclick = () => {
 
   updateModelStatus();
 
-  log("False positive → system less sensitive");
+  log("False positive detected → system sensitivity reduced");
   btnFalsePositive.disabled = true;
 };
 
@@ -149,14 +167,12 @@ btnThreat.onclick = () => {
 
   updateModelStatus();
 
-  log("Threat confirmed → system more sensitive");
+  log("Threat confirmed → system sensitivity increased");
   btnThreat.disabled = true;
 };
 
 btnReset.onclick = () => {
   scanned = false;
-  lastScore = null;
-  lastDecision = null;
 
   scanStatus.textContent = "Waiting for scan...";
   btnEvaluate.disabled = true;
@@ -165,12 +181,13 @@ btnReset.onclick = () => {
 
   riskScoreEl.textContent = "—";
   decisionEl.textContent = "—";
+  decisionEl.className = "";
   factorsEl.innerHTML = "";
 
   log("System reset");
 };
 
+// INIT
 thresholdEl.textContent = threshold;
-log("Prototype ready");
-
 updateModelStatus();
+log("Prototype ready");
