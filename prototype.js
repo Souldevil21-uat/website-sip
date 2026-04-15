@@ -1,4 +1,3 @@
-// ELEMENTS
 const btnScan = document.getElementById("btnScan");
 const btnEvaluate = document.getElementById("btnEvaluate");
 const btnFalsePositive = document.getElementById("btnFalsePositive");
@@ -22,20 +21,18 @@ const fpCountEl = document.getElementById("fpCount");
 const threatCountEl = document.getElementById("threatCount");
 const sensitivityEl = document.getElementById("sensitivity");
 
-// STATE
 let threshold = 60;
 let scanned = false;
 let falsePositives = 0;
 let confirmedThreats = 0;
+let feedbackApplied = false;
 
-// LOG FUNCTION
 function log(message) {
   const li = document.createElement("li");
   li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
   logEl.prepend(li);
 }
 
-// RISK MODEL
 function computeRisk() {
   let score = 0;
   let factors = [];
@@ -72,13 +69,12 @@ function computeRisk() {
   };
 }
 
-// RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
   thresholdEl.textContent = threshold;
 
-  // COLOR DECISION
   decisionEl.className = "";
+
   if (decision === "ALLOW") {
     decisionEl.classList.add("allow");
   } else if (decision === "STEP-UP AUTH REQUIRED") {
@@ -89,7 +85,6 @@ function render(score, decision, factors) {
 
   decisionEl.textContent = decision;
 
-  // FACTORS
   factorsEl.innerHTML = "";
   factors.forEach(factor => {
     const li = document.createElement("li");
@@ -98,10 +93,16 @@ function render(score, decision, factors) {
   });
 }
 
-// MODEL STATUS
 function updateModelStatus() {
-  fpCountEl.textContent = falsePositives;
-  threatCountEl.textContent = confirmedThreats;
+  if (fpCountEl) {
+    fpCountEl.textContent = falsePositives;
+  }
+
+  if (threatCountEl) {
+    threatCountEl.textContent = confirmedThreats;
+  }
+
+  if (!sensitivityEl) return;
 
   sensitivityEl.className = "";
 
@@ -117,7 +118,19 @@ function updateModelStatus() {
   }
 }
 
-// BUTTON EVENTS
+function disableFeedbackButtons() {
+  btnFalsePositive.disabled = true;
+  btnThreat.disabled = true;
+}
+
+function enableFeedbackButtonsForDecision(decision) {
+  if (decision === "FLAGGED" && !feedbackApplied) {
+    btnFalsePositive.disabled = false;
+    btnThreat.disabled = false;
+  } else {
+    disableFeedbackButtons();
+  }
+}
 
 btnScan.onclick = () => {
   scanned = true;
@@ -143,41 +156,49 @@ btnEvaluate.onclick = () => {
     decision = "FLAGGED";
   }
 
-  render(score, decision, factors);
+  feedbackApplied = false;
 
-// Always re-enable buttons on a new evaluation
-if (decision === "FLAGGED") {
-  btnFalsePositive.disabled = false;
-  btnThreat.disabled = false;
-} else {
-  btnFalsePositive.disabled = true;
-  btnThreat.disabled = true;
-}
+  render(score, decision, factors);
+  enableFeedbackButtonsForDecision(decision);
 
   log(`Behavioral risk analysis completed → ${decision} (Score: ${score})`);
 };
 
 btnFalsePositive.onclick = () => {
-  threshold = Math.min(90, threshold + 5);
+  if (feedbackApplied) return;
+
   falsePositives++;
+  threshold = Math.min(90, threshold + 5);
+  feedbackApplied = true;
+
   updateModelStatus();
+  thresholdEl.textContent = threshold;
+  disableFeedbackButtons();
+
   log(`False positive detected → system sensitivity reduced (Total: ${falsePositives})`);
 };
 
 btnThreat.onclick = () => {
-  threshold = Math.max(40, threshold - 5);
+  if (feedbackApplied) return;
+
   confirmedThreats++;
+  threshold = Math.max(40, threshold - 5);
+  feedbackApplied = true;
+
   updateModelStatus();
+  thresholdEl.textContent = threshold;
+  disableFeedbackButtons();
+
   log(`Threat confirmed → system sensitivity increased (Total: ${confirmedThreats})`);
 };
 
 btnReset.onclick = () => {
   scanned = false;
+  feedbackApplied = false;
 
   scanStatus.textContent = "Waiting for scan...";
   btnEvaluate.disabled = true;
-  btnFalsePositive.disabled = true;
-  btnThreat.disabled = true;
+  disableFeedbackButtons();
 
   riskScoreEl.textContent = "—";
   decisionEl.textContent = "—";
@@ -187,7 +208,6 @@ btnReset.onclick = () => {
   log("System reset");
 };
 
-// INIT
 thresholdEl.textContent = threshold;
 updateModelStatus();
 log("Prototype ready");
