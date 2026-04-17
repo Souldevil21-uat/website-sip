@@ -1,3 +1,5 @@
+import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.1.0";
+
 // ELEMENTS
 const btnScan = document.getElementById("btnScan");
 const btnEvaluate = document.getElementById("btnEvaluate");
@@ -29,6 +31,7 @@ let falsePositives = 0;
 let confirmedThreats = 0;
 let feedbackApplied = false;
 let currentDecision = "";
+let classifier = null;
 
 // LOG FUNCTION
 function log(message) {
@@ -37,40 +40,93 @@ function log(message) {
   logEl.prepend(li);
 }
 
-// RISK MODEL
-function computeRisk() {
-  let score = 0;
-  let factors = [];
+// BUILD SESSION TEXT FOR THE MODEL
+function buildSessionText() {
+  const timeText =
+    loginTime.value === "late" ? "late night login" : "normal login time";
+
+  const deviceText =
+    device.value === "new" ? "new device" : "known device";
+
+  const locationText =
+    locationSel.value === "unusual" ? "unusual location" : "usual location";
+
+  const typingText =
+    typing.value === "weird" ? "unusual typing pattern" : "normal typing pattern";
+
+  return `Authentication session with ${timeText}, ${deviceText}, ${locationText}, and ${typingText}.`;
+}
+
+// EXPLANATION LIST FOR THE UI
+function buildFactors() {
+  const factors = [];
 
   if (loginTime.value === "late") {
-    score += 30;
     factors.push("Late night login detected");
   }
 
   if (device.value === "new") {
-    score += 30;
     factors.push("New or unrecognized device");
   }
 
   if (locationSel.value === "unusual") {
-    score += 30;
     factors.push("Login from unusual location");
   }
 
   if (typing.value === "weird") {
-    score += 20;
     factors.push("Typing pattern anomaly detected");
   }
-
-  score += Math.floor(Math.random() * 6);
 
   if (factors.length === 0) {
     factors.push("All behavioral signals fall within normal thresholds.");
   }
 
+  return factors;
+}
+
+// LOAD REAL AI MODEL
+async function loadModel() {
+  try {
+    scanStatus.textContent = "Loading AI model...";
+    log("Loading real AI model for browser inference...");
+
+    // Real model inference in the browser
+    classifier = await pipeline(
+      "sentiment-analysis",
+      "Xenova/distilbert-base-uncased-finetuned-sst-2-english"
+    );
+
+    scanStatus.textContent = "AI model loaded. Ready for biometric scan.";
+    btnScan.disabled = false;
+    log("AI model loaded successfully.");
+  } catch (error) {
+    console.error(error);
+    scanStatus.textContent = "Failed to load AI model.";
+    log("Error: AI model failed to load.");
+  }
+}
+
+// CONVERT MODEL OUTPUT TO RISK SCORE
+async function computeRiskWithAI() {
+  const sessionText = buildSessionText();
+  const output = await classifier(sessionText);
+  const top = output[0];
+
+  // The classifier returns POSITIVE or NEGATIVE with a confidence score.
+  // We map that to a risk score for the dashboard.
+  let riskScore = 0;
+
+  if (top.label.toUpperCase().includes("NEGATIVE")) {
+    riskScore = Math.round(top.score * 100);
+  } else {
+    riskScore = Math.round((1 - top.score) * 100);
+  }
+
   return {
-    score: Math.min(score, 100),
-    factors: factors
+    score: Math.min(riskScore, 100),
+    modelLabel: top.label,
+    modelConfidence: Math.round(top.score * 100),
+    sessionText
   };
 }
 
@@ -92,7 +148,7 @@ function render(score, decision, factors) {
   decisionEl.textContent = decision;
 
   factorsEl.innerHTML = "";
-  factors.forEach(factor => {
+  factors.forEach((factor) => {
     const li = document.createElement("li");
     li.textContent = factor;
     factorsEl.appendChild(li);
@@ -134,35 +190,47 @@ function updateFeedbackButtons() {
 }
 
 // EVENTS
-
 btnScan.onclick = () => {
   scanned = true;
   scanStatus.textContent = "Biometric scan complete";
   btnEvaluate.disabled = false;
-  log("Biometric scan successful");
+  log("Biometric scan successful.");
 };
 
-btnEvaluate.onclick = () => {
-  if (!scanned) return;
+btnEvaluate.onclick = async () => {
+  if (!scanned || !classifier) return;
 
-  const result = computeRisk();
-  const score = result.score;
-  const factors = result.factors;
+  btnEvaluate.disabled = true;
+  scanStatus.textContent = "AI model analyzing session...";
 
-  if (score < threshold - 15) {
-    currentDecision = "ALLOW";
-  } else if (score < threshold) {
-    currentDecision = "STEP-UP AUTH REQUIRED";
-  } else {
-    currentDecision = "FLAGGED";
+  try {
+    const aiResult = await computeRiskWithAI();
+    const score = aiResult.score;
+    const factors = buildFactors();
+
+    if (score < threshold - 15) {
+      currentDecision = "ALLOW";
+    } else if (score < threshold) {
+      currentDecision = "STEP-UP AUTH REQUIRED";
+    } else {
+      currentDecision = "FLAGGED";
+    }
+
+    feedbackApplied = false;
+
+    render(score, currentDecision, factors);
+    updateFeedbackButtons();
+
+    log(`AI model analyzed: "${aiResult.sessionText}"`);
+    log(`Model output: ${aiResult.modelLabel} (${aiResult.modelConfidence}% confidence)`);
+    log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
+  } catch (error) {
+    console.error(error);
+    log("Error: session analysis failed.");
+  } finally {
+    scanStatus.textContent = "Biometric scan complete";
+    btnEvaluate.disabled = false;
   }
-
-  feedbackApplied = false;
-
-  render(score, currentDecision, factors);
-  updateFeedbackButtons();
-
-  log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
 };
 
 btnFalsePositive.onclick = () => {
@@ -198,7 +266,10 @@ btnReset.onclick = () => {
   feedbackApplied = false;
   currentDecision = "";
 
-  scanStatus.textContent = "Waiting for scan...";
+  scanStatus.textContent = classifier
+    ? "AI model loaded. Ready for biometric scan."
+    : "Loading AI model...";
+
   btnEvaluate.disabled = true;
   disableFeedbackButtons();
 
@@ -207,11 +278,12 @@ btnReset.onclick = () => {
   decisionEl.className = "";
   factorsEl.innerHTML = "";
 
-  log("System reset");
+  log("System reset.");
 };
 
 // INIT
 thresholdEl.textContent = threshold;
 updateModelStatus();
 disableFeedbackButtons();
-log("Prototype ready");
+loadModel();
+log("Prototype ready.");

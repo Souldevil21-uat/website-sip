@@ -10,18 +10,18 @@
   <main class="wrap">
 
     <header class="card">
-  <div class="result-pill">Prototype Demo</div>
-  <h1>AI Passwordless Login</h1>
-  <p class="sub">
-    This prototype simulates biometric authentication combined with adaptive behavioral analysis.
-    It evaluates login risk, explains why a session was flagged, and adjusts sensitivity based on feedback.
-  </p>
-</header>
+      <div class="result-pill">Prototype Demo</div>
+      <h1>AI Passwordless Login</h1>
+      <p class="sub">
+        This prototype demonstrates biometric authentication combined with a real AI model
+        that analyzes session context and drives the dashboard's risk decision.
+      </p>
+    </header>
 
     <section class="card">
       <h2>Step 1: Biometric Scan</h2>
-      <button id="btnScan" class="btn">Scan Biometrics</button>
-      <p id="scanStatus">Waiting for scan...</p>
+      <button id="btnScan" class="btn" disabled>Scan Biometrics</button>
+      <p id="scanStatus">Loading AI model...</p>
     </section>
 
     <section class="card">
@@ -82,16 +82,16 @@
     </section>
 
     <section class="card">
-  <h2>Model Status</h2>
+      <h2>Model Status</h2>
 
-  <p><strong>False Positives Learned:</strong> <span id="fpCount">0</span></p>
-  <p><strong>Confirmed Threats Learned:</strong> <span id="threatCount">0</span></p>
-  <p><strong>Current Sensitivity:</strong> <span id="sensitivity">Moderate</span></p>
+      <p><strong>False Positives Learned:</strong> <span id="fpCount">0</span></p>
+      <p><strong>Confirmed Threats Learned:</strong> <span id="threatCount">0</span></p>
+      <p><strong>Current Sensitivity:</strong> <span id="sensitivity">Moderate</span></p>
 
-  <p class="sub">
-    The system adapts its detection sensitivity based on user feedback.
-  </p>
-</section>
+      <p class="sub">
+        The dashboard threshold adapts based on feedback after each evaluated session.
+      </p>
+    </section>
 
     <section class="card">
       <h2>Audit Log</h2>
@@ -100,6 +100,6 @@
 
   </main>
 
-  <script src="prototype.js"></script>
+  <script type="module" src="prototype.js"></script>
 </body>
 </html>
