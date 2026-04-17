@@ -88,21 +88,10 @@ function buildSessionText() {
 function buildFactors() {
   const factors = [];
 
-  if (loginTime.value === "late") {
-    factors.push("Late night login detected");
-  }
-
-  if (device.value === "new") {
-    factors.push("New or unrecognized device");
-  }
-
-  if (locationSel.value === "unusual") {
-    factors.push("Login from unusual location");
-  }
-
-  if (typing.value === "weird") {
-    factors.push("Typing pattern anomaly detected");
-  }
+  if (loginTime.value === "late") factors.push("Late night login detected");
+  if (device.value === "new") factors.push("New or unrecognized device");
+  if (locationSel.value === "unusual") factors.push("Login from unusual location");
+  if (typing.value === "weird") factors.push("Typing pattern anomaly detected");
 
   if (factors.length === 0) {
     factors.push("All behavioral signals fall within normal thresholds.");
@@ -139,7 +128,6 @@ async function getEmbedding(text) {
     normalize: true
   });
 
-  // output.data is a Float32Array
   return Array.from(output.data);
 }
 
@@ -190,21 +178,17 @@ async function computeRiskWithAI() {
   if (locationSel.value === "unusual") anomalyScore += 30;
   if (typing.value === "weird") anomalyScore += 20;
 
-  // Real AI influence from semantic similarity
+  // AI influence from semantic similarity
   const aiDelta = riskySimilarity - safeSimilarity;
   const aiAdjustment = Math.round(aiDelta * 15);
 
-  // Slight but noticeable variation
+  // Small variation so repeated runs are not identical
   let variation = 0;
-
   if (anomalyScore === 0) {
-    // Safe sessions: tiny range
     variation = Math.floor(Math.random() * 4); // 0 to 3
   } else if (anomalyScore >= 80) {
-    // Very risky sessions: keep near the top
     variation = Math.floor(Math.random() * 5) - 2; // -2 to +2
   } else {
-    // Mid-risk sessions: a little more movement
     variation = Math.floor(Math.random() * 7) - 3; // -3 to +3
   }
 
@@ -215,13 +199,10 @@ async function computeRiskWithAI() {
 
   return {
     score: finalScore,
-    anomalyScore: anomalyScore,
-    aiAdjustment: aiAdjustment,
-    variation: variation,
-    modelLabel:
-      riskySimilarity > safeSimilarity
-        ? "RISKY PATTERN MATCH"
-        : "SAFE PATTERN MATCH",
+    anomalyScore,
+    aiAdjustment,
+    variation,
+    modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
     sessionText,
     safeSimilarity: safeSimilarity.toFixed(3),
     riskySimilarity: riskySimilarity.toFixed(3)
@@ -234,7 +215,6 @@ function render(score, decision, factors) {
   thresholdEl.textContent = threshold;
 
   decisionEl.className = "";
-
   if (decision === "ALLOW") {
     decisionEl.classList.add("allow");
   } else if (decision === "STEP-UP AUTH REQUIRED") {
@@ -259,7 +239,6 @@ function updateModelStatus() {
   threatCountEl.textContent = confirmedThreats;
 
   sensitivityEl.className = "";
-
   if (threshold >= 75) {
     sensitivityEl.textContent = "Low (Less Sensitive)";
     sensitivityEl.classList.add("low");
