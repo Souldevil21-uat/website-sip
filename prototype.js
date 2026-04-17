@@ -182,31 +182,26 @@ async function computeRiskWithAI() {
   const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
   const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
 
-  // Base AI score from similarity
-  const total = safeSimilarity + riskySimilarity;
-  let suspiciousRatio = 0.5;
+  // Main risk score comes from clear security anomalies
+  let anomalyScore = 0;
 
-  if (total > 0) {
-    suspiciousRatio = riskySimilarity / total;
-  }
+  if (loginTime.value === "late") anomalyScore += 20;
+  if (device.value === "new") anomalyScore += 30;
+  if (locationSel.value === "unusual") anomalyScore += 30;
+  if (typing.value === "weird") anomalyScore += 20;
 
-  let aiScore = Math.round(suspiciousRatio * 100);
+  // AI model acts as a real semantic adjustment layer
+  // If the session looks more like risky examples, raise the score a bit.
+  // If it looks more like safe examples, lower it a bit.
+  const aiDelta = riskySimilarity - safeSimilarity;
+  const aiAdjustment = Math.round(aiDelta * 15);
 
-  // Add calibrated security boosts
-  let signalBoost = 0;
-
-  if (loginTime.value === "late") signalBoost += 10;
-  if (device.value === "new") signalBoost += 15;
-  if (locationSel.value === "unusual") signalBoost += 15;
-  if (typing.value === "weird") signalBoost += 10;
-
-  // Final score blends real AI output with explicit anomaly weighting
-  const finalScore = Math.min(100, aiScore + signalBoost);
+  const finalScore = Math.max(0, Math.min(100, anomalyScore + aiAdjustment));
 
   return {
     score: finalScore,
-    aiScore: aiScore,
-    signalBoost: signalBoost,
+    anomalyScore: anomalyScore,
+    aiAdjustment: aiAdjustment,
     modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
     sessionText,
     safeSimilarity: safeSimilarity.toFixed(3),
@@ -309,8 +304,8 @@ btnEvaluate.onclick = async () => {
     log(`Similarity to safe patterns: ${aiResult.safeSimilarity}`);
     log(`Similarity to risky patterns: ${aiResult.riskySimilarity}`);
     log(`Model output: ${aiResult.modelLabel}`);
-    log(`AI base score: ${aiResult.aiScore}`);
-    log(`Security signal boost: +${aiResult.signalBoost}`);
+    log(`Explicit anomaly score: ${aiResult.anomalyScore}`);
+    log(`AI semantic adjustment: ${aiResult.aiAdjustment >= 0 ? "+" : ""}${aiResult.aiAdjustment}`);
     log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
   } catch (error) {
     console.error(error);
