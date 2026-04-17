@@ -40,21 +40,35 @@ function log(message) {
   logEl.prepend(li);
 }
 
-// BUILD SESSION TEXT FOR THE MODEL
+// Build Session Text to Feed to the Model
 function buildSessionText() {
-  const timeText =
-    loginTime.value === "late" ? "late night login" : "normal login time";
+  const parts = [];
 
-  const deviceText =
-    device.value === "new" ? "new device" : "known device";
+  if (loginTime.value === "late") {
+    parts.push("The login happened late at night outside the user's normal access window.");
+  } else {
+    parts.push("The login happened during the user's normal access hours.");
+  }
 
-  const locationText =
-    locationSel.value === "unusual" ? "unusual location" : "usual location";
+  if (device.value === "new") {
+    parts.push("The session came from a new and previously unseen device.");
+  } else {
+    parts.push("The session came from a recognized device used before.");
+  }
 
-  const typingText =
-    typing.value === "weird" ? "unusual typing pattern" : "normal typing pattern";
+  if (locationSel.value === "unusual") {
+    parts.push("The access location is unusual and does not match the normal user pattern.");
+  } else {
+    parts.push("The access location matches the user's usual area.");
+  }
 
-  return `Authentication session with ${timeText}, ${deviceText}, ${locationText}, and ${typingText}.`;
+  if (typing.value === "weird") {
+    parts.push("The typing behavior appears inconsistent with the user's normal pattern.");
+  } else {
+    parts.push("The typing behavior matches the user's normal pattern.");
+  }
+
+  return parts.join(" ");
 }
 
 // EXPLANATION LIST FOR THE UI
@@ -93,7 +107,7 @@ async function loadModel() {
     // Real model inference in the browser
     classifier = await pipeline(
   "zero-shot-classification",
-  "Xenova/distilbert-base-mnli"
+  "Xenova/distilbert-base-uncased-mnli"
 );
 
     scanStatus.textContent = "AI model loaded. Ready for biometric scan.";
@@ -110,11 +124,15 @@ async function loadModel() {
 async function computeRiskWithAI() {
   const sessionText = buildSessionText();
 
-  const labels = ["safe login", "suspicious login"];
+  const output = await classifier(sessionText, [
+    "normal account activity",
+    "account takeover attempt"
+  ], {
+    hypothesis_template: "This authentication session is {}."
+  });
 
-  const output = await classifier(sessionText, labels);
   const suspiciousIndex = output.labels.findIndex(
-    label => label.toLowerCase() === "suspicious login"
+    label => label.toLowerCase() === "account takeover attempt"
   );
 
   const suspiciousScore = suspiciousIndex >= 0
@@ -124,14 +142,14 @@ async function computeRiskWithAI() {
   const riskScore = Math.round(suspiciousScore * 100);
 
   return {
-    score: Math.min(riskScore, 100),
-    modelLabel: suspiciousScore >= 0.5 ? "SUSPICIOUS LOGIN" : "SAFE LOGIN",
-    modelConfidence: Math.round(suspiciousScore * 100),
+    score: riskScore,
+    modelLabel: output.labels[0],
+    modelConfidence: Math.round(output.scores[0] * 100),
     sessionText
   };
 }
 
-// RENDER RESULTS
+// Render Results
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
   thresholdEl.textContent = threshold;
@@ -156,7 +174,7 @@ function render(score, decision, factors) {
   });
 }
 
-// MODEL STATUS
+// Model Status
 function updateModelStatus() {
   fpCountEl.textContent = falsePositives;
   threatCountEl.textContent = confirmedThreats;
@@ -175,7 +193,7 @@ function updateModelStatus() {
   }
 }
 
-// BUTTON CONTROL
+// Button Control
 function disableFeedbackButtons() {
   btnFalsePositive.disabled = true;
   btnThreat.disabled = true;
@@ -190,7 +208,7 @@ function updateFeedbackButtons() {
   }
 }
 
-// EVENTS
+// Events
 btnScan.onclick = () => {
   scanned = true;
   scanStatus.textContent = "Biometric scan complete";
