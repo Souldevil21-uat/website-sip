@@ -31,7 +31,20 @@ let falsePositives = 0;
 let confirmedThreats = 0;
 let feedbackApplied = false;
 let currentDecision = "";
-let classifier = null;
+let extractor = null;
+
+// Reference examples for similarity comparison
+const SAFE_EXAMPLES = [
+  "Login during normal hours from a known device in the usual location with normal typing behavior.",
+  "A recognized user accessed the account from a familiar device and expected location during normal business hours.",
+  "Routine account activity from a trusted device in a normal location with behavior matching the user profile."
+];
+
+const RISKY_EXAMPLES = [
+  "Late night login from a new device in an unusual location with abnormal typing behavior.",
+  "Possible account takeover attempt using an unrecognized device, suspicious location, and behavior outside the user profile.",
+  "Unusual authentication session with multiple anomalies including device mismatch, location mismatch, and inconsistent typing."
+];
 
 // LOG FUNCTION
 function log(message) {
@@ -40,7 +53,7 @@ function log(message) {
   logEl.prepend(li);
 }
 
-// Build Session Text to Feed to the Model
+// BUILD SESSION TEXT FOR THE MODEL
 function buildSessionText() {
   const parts = [];
 
@@ -102,13 +115,12 @@ function buildFactors() {
 async function loadModel() {
   try {
     scanStatus.textContent = "Loading AI model...";
-    log("Loading real AI model for browser inference...");
+    log("Loading real AI embedding model for browser inference...");
 
-    // Real model inference in the browser
-    classifier = await pipeline(
-  "zero-shot-classification",
-  "Xenova/distilbert-base-uncased-mnli"
-);
+    extractor = await pipeline(
+      "feature-extraction",
+      "Xenova/all-MiniLM-L6-v2"
+    );
 
     scanStatus.textContent = "AI model loaded. Ready for biometric scan.";
     btnScan.disabled = false;
@@ -120,36 +132,77 @@ async function loadModel() {
   }
 }
 
-// Convert Model Output to AI Score
-async function computeRiskWithAI() {
-  const sessionText = buildSessionText();
-
-  const output = await classifier(sessionText, [
-    "normal account activity",
-    "account takeover attempt"
-  ], {
-    hypothesis_template: "This authentication session is {}."
+// GET NORMALIZED EMBEDDING
+async function getEmbedding(text) {
+  const output = await extractor(text, {
+    pooling: "mean",
+    normalize: true
   });
 
-  const suspiciousIndex = output.labels.findIndex(
-    label => label.toLowerCase() === "account takeover attempt"
-  );
+  // output.data is a Float32Array
+  return Array.from(output.data);
+}
 
-  const suspiciousScore = suspiciousIndex >= 0
-    ? output.scores[suspiciousIndex]
-    : 0.5;
+// COSINE SIMILARITY
+function cosineSimilarity(a, b) {
+  let dot = 0;
+  let magA = 0;
+  let magB = 0;
 
-  const riskScore = Math.round(suspiciousScore * 100);
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    magA += a[i] * a[i];
+    magB += b[i] * b[i];
+  }
+
+  if (magA === 0 || magB === 0) {
+    return 0;
+  }
+
+  return dot / (Math.sqrt(magA) * Math.sqrt(magB));
+}
+
+// AVERAGE SIMILARITY TO A SET OF EXAMPLES
+async function averageSimilarity(sessionEmbedding, examples) {
+  let total = 0;
+
+  for (const example of examples) {
+    const exampleEmbedding = await getEmbedding(example);
+    total += cosineSimilarity(sessionEmbedding, exampleEmbedding);
+  }
+
+  return total / examples.length;
+}
+
+// COMPUTE RISK WITH REAL AI EMBEDDINGS
+async function computeRiskWithAI() {
+  const sessionText = buildSessionText();
+  const sessionEmbedding = await getEmbedding(sessionText);
+
+  const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
+  const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
+
+  // Convert similarity comparison into 0-100 risk
+  const total = safeSimilarity + riskySimilarity;
+  let suspiciousRatio = 0.5;
+
+  if (total > 0) {
+    suspiciousRatio = riskySimilarity / total;
+  }
+
+  const riskScore = Math.round(suspiciousRatio * 100);
 
   return {
     score: riskScore,
-    modelLabel: output.labels[0],
-    modelConfidence: Math.round(output.scores[0] * 100),
-    sessionText
+    modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
+    modelConfidence: Math.round(Math.max(riskySimilarity, safeSimilarity) * 100),
+    sessionText,
+    safeSimilarity: safeSimilarity.toFixed(3),
+    riskySimilarity: riskySimilarity.toFixed(3)
   };
 }
 
-// Render Results
+// RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
   thresholdEl.textContent = threshold;
@@ -174,7 +227,7 @@ function render(score, decision, factors) {
   });
 }
 
-// Model Status
+// MODEL STATUS
 function updateModelStatus() {
   fpCountEl.textContent = falsePositives;
   threatCountEl.textContent = confirmedThreats;
@@ -193,7 +246,7 @@ function updateModelStatus() {
   }
 }
 
-// Button Control
+// BUTTON CONTROL
 function disableFeedbackButtons() {
   btnFalsePositive.disabled = true;
   btnThreat.disabled = true;
@@ -208,7 +261,7 @@ function updateFeedbackButtons() {
   }
 }
 
-// Events
+// EVENTS
 btnScan.onclick = () => {
   scanned = true;
   scanStatus.textContent = "Biometric scan complete";
@@ -217,7 +270,7 @@ btnScan.onclick = () => {
 };
 
 btnEvaluate.onclick = async () => {
-  if (!scanned || !classifier) return;
+  if (!scanned || !extractor) return;
 
   btnEvaluate.disabled = true;
   scanStatus.textContent = "AI model analyzing session...";
@@ -241,7 +294,9 @@ btnEvaluate.onclick = async () => {
     updateFeedbackButtons();
 
     log(`AI model analyzed: "${aiResult.sessionText}"`);
-    log(`Model output: ${aiResult.modelLabel} (${aiResult.modelConfidence}% confidence)`);
+    log(`Similarity to safe patterns: ${aiResult.safeSimilarity}`);
+    log(`Similarity to risky patterns: ${aiResult.riskySimilarity}`);
+    log(`Model output: ${aiResult.modelLabel}`);
     log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
   } catch (error) {
     console.error(error);
@@ -285,7 +340,7 @@ btnReset.onclick = () => {
   feedbackApplied = false;
   currentDecision = "";
 
-  scanStatus.textContent = classifier
+  scanStatus.textContent = extractor
     ? "AI model loaded. Ready for biometric scan."
     : "Loading AI model...";
 
