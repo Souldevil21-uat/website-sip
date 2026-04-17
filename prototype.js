@@ -35,15 +35,19 @@ let extractor = null;
 
 // Reference examples for similarity comparison
 const SAFE_EXAMPLES = [
-  "Login during normal hours from a known device in the usual location with normal typing behavior.",
-  "A recognized user accessed the account from a familiar device and expected location during normal business hours.",
-  "Routine account activity from a trusted device in a normal location with behavior matching the user profile."
+  "Routine login during normal business hours from a recognized device in the user's usual location with normal typing behavior and no anomalies detected.",
+  "Expected account access from a trusted device, familiar region, standard work hours, and behavior matching the legitimate user's typing profile.",
+  "Normal authentication session with no suspicious indicators: known device, usual location, normal access time, and consistent behavioral pattern.",
+  "Legitimate user login from a previously approved device in a normal area during expected hours with stable typing rhythm.",
+  "Low-risk login session that matches the account owner's normal behavior, location, device history, and timing."
 ];
 
 const RISKY_EXAMPLES = [
-  "Late night login from a new device in an unusual location with abnormal typing behavior.",
-  "Possible account takeover attempt using an unrecognized device, suspicious location, and behavior outside the user profile.",
-  "Unusual authentication session with multiple anomalies including device mismatch, location mismatch, and inconsistent typing."
+  "Suspicious login attempt late at night from a new device in an unusual location with abnormal typing behavior and multiple security anomalies.",
+  "Possible account takeover using an unrecognized device, unexpected region, off-hours access, and behavior inconsistent with the legitimate user.",
+  "High-risk authentication session with several anomaly indicators including device mismatch, location mismatch, unusual timing, and typing inconsistency.",
+  "Potential fraudulent access from an unseen device outside the user's normal area during an unusual time with behavior that does not match the normal profile.",
+  "Dangerous login pattern suggesting account compromise due to multiple behavioral and contextual anomalies."
 ];
 
 // LOG FUNCTION
@@ -58,27 +62,27 @@ function buildSessionText() {
   const parts = [];
 
   if (loginTime.value === "late") {
-    parts.push("The login happened late at night outside the user's normal access window.");
+    parts.push("Login occurred outside normal access hours.");
   } else {
-    parts.push("The login happened during the user's normal access hours.");
+    parts.push("Login occurred during expected access hours.");
   }
 
   if (device.value === "new") {
-    parts.push("The session came from a new and previously unseen device.");
+    parts.push("Device is new and not previously recognized.");
   } else {
-    parts.push("The session came from a recognized device used before.");
+    parts.push("Device is known and previously trusted.");
   }
 
   if (locationSel.value === "unusual") {
-    parts.push("The access location is unusual and does not match the normal user pattern.");
+    parts.push("Location is unusual compared to prior user activity.");
   } else {
-    parts.push("The access location matches the user's usual area.");
+    parts.push("Location matches the user's normal access area.");
   }
 
   if (typing.value === "weird") {
-    parts.push("The typing behavior appears inconsistent with the user's normal pattern.");
+    parts.push("Typing behavior is inconsistent with the normal user profile.");
   } else {
-    parts.push("The typing behavior matches the user's normal pattern.");
+    parts.push("Typing behavior matches the user's normal profile.");
   }
 
   return parts.join(" ");
@@ -197,12 +201,31 @@ async function computeRiskWithAI() {
     Math.min(100, anomalyScore + aiAdjustment + variation)
   );
 
+  let modelLabel = "BORDERLINE PATTERN MATCH";
+
+if (safeSimilarity - riskySimilarity > 0.03) {
+  modelLabel = "SAFE PATTERN MATCH";
+} else if (riskySimilarity - safeSimilarity > 0.03) {
+  modelLabel = "RISKY PATTERN MATCH";
+}
+
+return {
+  score: finalScore,
+  anomalyScore,
+  aiAdjustment,
+  variation,
+  modelLabel,
+  sessionText,
+  safeSimilarity: safeSimilarity.toFixed(3),
+  riskySimilarity: riskySimilarity.toFixed(3)
+};
+
   return {
     score: finalScore,
     anomalyScore,
     aiAdjustment,
     variation,
-    modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
+    modelLabel,
     sessionText,
     safeSimilarity: safeSimilarity.toFixed(3),
     riskySimilarity: riskySimilarity.toFixed(3)
