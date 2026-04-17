@@ -182,7 +182,7 @@ async function computeRiskWithAI() {
   const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
   const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
 
-  // Convert similarity comparison into 0-100 risk
+  // Base AI score from similarity
   const total = safeSimilarity + riskySimilarity;
   let suspiciousRatio = 0.5;
 
@@ -190,12 +190,24 @@ async function computeRiskWithAI() {
     suspiciousRatio = riskySimilarity / total;
   }
 
-  const riskScore = Math.round(suspiciousRatio * 100);
+  let aiScore = Math.round(suspiciousRatio * 100);
+
+  // Add calibrated security boosts
+  let signalBoost = 0;
+
+  if (loginTime.value === "late") signalBoost += 10;
+  if (device.value === "new") signalBoost += 15;
+  if (locationSel.value === "unusual") signalBoost += 15;
+  if (typing.value === "weird") signalBoost += 10;
+
+  // Final score blends real AI output with explicit anomaly weighting
+  const finalScore = Math.min(100, aiScore + signalBoost);
 
   return {
-    score: riskScore,
+    score: finalScore,
+    aiScore: aiScore,
+    signalBoost: signalBoost,
     modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
-    modelConfidence: Math.round(Math.max(riskySimilarity, safeSimilarity) * 100),
     sessionText,
     safeSimilarity: safeSimilarity.toFixed(3),
     riskySimilarity: riskySimilarity.toFixed(3)
@@ -297,6 +309,8 @@ btnEvaluate.onclick = async () => {
     log(`Similarity to safe patterns: ${aiResult.safeSimilarity}`);
     log(`Similarity to risky patterns: ${aiResult.riskySimilarity}`);
     log(`Model output: ${aiResult.modelLabel}`);
+    log(`AI base score: ${aiResult.aiScore}`);
+    log(`Security signal boost: +${aiResult.signalBoost}`);
     log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
   } catch (error) {
     console.error(error);
