@@ -178,13 +178,12 @@ async function computeRiskWithAI() {
 
   // Main anomaly-driven score
   let anomalyScore = 0;
-
   if (loginTime.value === "late") anomalyScore += 20;
   if (device.value === "new") anomalyScore += 30;
   if (locationSel.value === "unusual") anomalyScore += 30;
   if (typing.value === "weird") anomalyScore += 20;
 
-  // AI influence from semantic similarity
+  // Real AI influence from semantic similarity
   const aiDelta = riskySimilarity - safeSimilarity;
   const aiAdjustment = Math.round(aiDelta * 15);
 
@@ -203,27 +202,25 @@ async function computeRiskWithAI() {
     Math.min(100, anomalyScore + aiAdjustment + variation)
   );
 
-  const similarityGap = riskySimilarity - safeSimilarity;
-
-let modelLabel = "BORDERLINE PATTERN MATCH";
-
-if (finalScore <= 15 && similarityGap <= 0.02) {
-  modelLabel = "SAFE PATTERN MATCH";
-} else if (finalScore >= 70 && similarityGap >= -0.02) {
-  modelLabel = "RISKY PATTERN MATCH";
-}
+  // Make the model label track the practical result range
+  let modelLabel = "AI REVIEW: BORDERLINE";
+  if (finalScore <= 15) {
+    modelLabel = "AI REVIEW: SAFE PATTERN";
+  } else if (finalScore >= 70) {
+    modelLabel = "AI REVIEW: RISKY PATTERN";
+  }
 
   return {
-  score: finalScore,
-  anomalyScore,
-  aiAdjustment,
-  variation,
-  modelLabel,
-  sessionText,
-  safeSimilarity: safeSimilarity.toFixed(3),
-  riskySimilarity: riskySimilarity.toFixed(3),
-  confidenceGap: similarityGap.toFixed(3)
-};
+    score: finalScore,
+    anomalyScore,
+    aiAdjustment,
+    variation,
+    modelLabel,
+    sessionText,
+    safeSimilarity: safeSimilarity.toFixed(3),
+    riskySimilarity: riskySimilarity.toFixed(3),
+    confidenceGap: aiDelta.toFixed(3)
+  };
 }
 
 // RENDER RESULTS
