@@ -182,7 +182,7 @@ async function computeRiskWithAI() {
   const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
   const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
 
-  // Main risk score comes from clear security anomalies
+  // Main anomaly-driven score (dominant factor)
   let anomalyScore = 0;
 
   if (loginTime.value === "late") anomalyScore += 20;
@@ -190,19 +190,28 @@ async function computeRiskWithAI() {
   if (locationSel.value === "unusual") anomalyScore += 30;
   if (typing.value === "weird") anomalyScore += 20;
 
-  // AI model acts as a real semantic adjustment layer
-  // If the session looks more like risky examples, raise the score a bit.
-  // If it looks more like safe examples, lower it a bit.
+  // AI semantic adjustment (real model influence)
   const aiDelta = riskySimilarity - safeSimilarity;
   const aiAdjustment = Math.round(aiDelta * 15);
 
-  const finalScore = Math.max(0, Math.min(100, anomalyScore + aiAdjustment));
+  // SMALL controlled variation (real-world noise simulation)
+  let variation = Math.floor(Math.random() * 3) - 1; 
+  // -1, 0, or +1 only
+
+  const finalScore = Math.max(
+    0,
+    Math.min(100, anomalyScore + aiAdjustment + variation)
+  );
 
   return {
     score: finalScore,
     anomalyScore: anomalyScore,
     aiAdjustment: aiAdjustment,
-    modelLabel: riskySimilarity > safeSimilarity ? "RISKY PATTERN MATCH" : "SAFE PATTERN MATCH",
+    variation: variation,
+    modelLabel:
+      riskySimilarity > safeSimilarity
+        ? "RISKY PATTERN MATCH"
+        : "SAFE PATTERN MATCH",
     sessionText,
     safeSimilarity: safeSimilarity.toFixed(3),
     riskySimilarity: riskySimilarity.toFixed(3)
@@ -306,6 +315,7 @@ btnEvaluate.onclick = async () => {
     log(`Model output: ${aiResult.modelLabel}`);
     log(`Explicit anomaly score: ${aiResult.anomalyScore}`);
     log(`AI semantic adjustment: ${aiResult.aiAdjustment >= 0 ? "+" : ""}${aiResult.aiAdjustment}`);
+    log(`Telemetry variation: ${aiResult.variation >= 0 ? "+" : ""}${aiResult.variation}`);
     log(`Behavioral risk analysis completed → ${currentDecision} (Score: ${score})`);
   } catch (error) {
     console.error(error);
