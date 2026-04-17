@@ -182,7 +182,7 @@ async function computeRiskWithAI() {
   const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
   const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
 
-  // Main anomaly-driven score (dominant factor)
+  // Main anomaly-driven score
   let anomalyScore = 0;
 
   if (loginTime.value === "late") anomalyScore += 20;
@@ -190,18 +190,43 @@ async function computeRiskWithAI() {
   if (locationSel.value === "unusual") anomalyScore += 30;
   if (typing.value === "weird") anomalyScore += 20;
 
-  // AI semantic adjustment (real model influence)
+  // Real AI influence from semantic similarity
   const aiDelta = riskySimilarity - safeSimilarity;
   const aiAdjustment = Math.round(aiDelta * 15);
 
-  // SMALL controlled variation (real-world noise simulation)
-  let variation = Math.floor(Math.random() * 3) - 1; 
-  // -1, 0, or +1 only
+  // Slight but noticeable variation
+  let variation = 0;
+
+  if (anomalyScore === 0) {
+    // Safe sessions: tiny range
+    variation = Math.floor(Math.random() * 4); // 0 to 3
+  } else if (anomalyScore >= 80) {
+    // Very risky sessions: keep near the top
+    variation = Math.floor(Math.random() * 5) - 2; // -2 to +2
+  } else {
+    // Mid-risk sessions: a little more movement
+    variation = Math.floor(Math.random() * 7) - 3; // -3 to +3
+  }
 
   const finalScore = Math.max(
     0,
     Math.min(100, anomalyScore + aiAdjustment + variation)
   );
+
+  return {
+    score: finalScore,
+    anomalyScore: anomalyScore,
+    aiAdjustment: aiAdjustment,
+    variation: variation,
+    modelLabel:
+      riskySimilarity > safeSimilarity
+        ? "RISKY PATTERN MATCH"
+        : "SAFE PATTERN MATCH",
+    sessionText,
+    safeSimilarity: safeSimilarity.toFixed(3),
+    riskySimilarity: riskySimilarity.toFixed(3)
+  };
+}
 
   return {
     score: finalScore,
