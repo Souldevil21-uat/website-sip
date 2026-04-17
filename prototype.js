@@ -391,3 +391,4 @@ updateModelStatus();
 disableFeedbackButtons();
 loadModel();
 log("Prototype ready.");
+}
