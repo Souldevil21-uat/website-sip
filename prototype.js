@@ -228,20 +228,6 @@ async function computeRiskWithAI() {
   };
 }
 
-  return {
-    score: finalScore,
-    anomalyScore: anomalyScore,
-    aiAdjustment: aiAdjustment,
-    variation: variation,
-    modelLabel:
-      riskySimilarity > safeSimilarity
-        ? "RISKY PATTERN MATCH"
-        : "SAFE PATTERN MATCH",
-    sessionText,
-    safeSimilarity: safeSimilarity.toFixed(3),
-    riskySimilarity: riskySimilarity.toFixed(3)
-  };
-
 // RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
