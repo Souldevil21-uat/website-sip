@@ -220,18 +220,6 @@ return {
   riskySimilarity: riskySimilarity.toFixed(3)
 };
 
-  return {
-    score: finalScore,
-    anomalyScore,
-    aiAdjustment,
-    variation,
-    modelLabel,
-    sessionText,
-    safeSimilarity: safeSimilarity.toFixed(3),
-    riskySimilarity: riskySimilarity.toFixed(3)
-  };
-}
-
 // RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
