@@ -203,9 +203,9 @@ async function computeRiskWithAI() {
 
   let modelLabel = "BORDERLINE PATTERN MATCH";
 
-if (safeSimilarity - riskySimilarity > 0.03) {
+if (safeSimilarity - riskySimilarity > 0.08) {
   modelLabel = "SAFE PATTERN MATCH";
-} else if (riskySimilarity - safeSimilarity > 0.03) {
+} else if (riskySimilarity - safeSimilarity > 0.08) {
   modelLabel = "RISKY PATTERN MATCH";
 }
 
@@ -301,6 +301,7 @@ btnEvaluate.onclick = async () => {
     session: aiResult.sessionText,
     safeSimilarity: aiResult.safeSimilarity,
     riskySimilarity: aiResult.riskySimilarity,
+    confidenceGap: (riskySimilarity - safeSimilarity).toFixed(3),
     modelDecision: aiResult.modelLabel
 }, null, 2);
     const score = aiResult.score;
