@@ -241,7 +241,6 @@ async function computeRiskWithAI() {
     safeSimilarity: safeSimilarity.toFixed(3),
     riskySimilarity: riskySimilarity.toFixed(3)
   };
-}
 
 // RENDER RESULTS
 function render(score, decision, factors) {
