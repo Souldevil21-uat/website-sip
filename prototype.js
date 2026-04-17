@@ -203,25 +203,27 @@ async function computeRiskWithAI() {
     Math.min(100, anomalyScore + aiAdjustment + variation)
   );
 
-  let modelLabel = "BORDERLINE PATTERN MATCH";
+  const similarityGap = riskySimilarity - safeSimilarity;
 
-  if (safeSimilarity - riskySimilarity > 0.08) {
-    modelLabel = "SAFE PATTERN MATCH";
-  } else if (riskySimilarity - safeSimilarity > 0.08) {
-    modelLabel = "RISKY PATTERN MATCH";
-  }
+let modelLabel = "BORDERLINE PATTERN MATCH";
+
+if (finalScore <= 15 && similarityGap <= 0.02) {
+  modelLabel = "SAFE PATTERN MATCH";
+} else if (finalScore >= 70 && similarityGap >= -0.02) {
+  modelLabel = "RISKY PATTERN MATCH";
+}
 
   return {
-    score: finalScore,
-    anomalyScore,
-    aiAdjustment,
-    variation,
-    modelLabel,
-    sessionText,
-    safeSimilarity: safeSimilarity.toFixed(3),
-    riskySimilarity: riskySimilarity.toFixed(3),
-    confidenceGap: (riskySimilarity - safeSimilarity).toFixed(3)
-  };
+  score: finalScore,
+  anomalyScore,
+  aiAdjustment,
+  variation,
+  modelLabel,
+  sessionText,
+  safeSimilarity: safeSimilarity.toFixed(3),
+  riskySimilarity: riskySimilarity.toFixed(3),
+  confidenceGap: similarityGap.toFixed(3)
+};
 }
 
 // RENDER RESULTS
