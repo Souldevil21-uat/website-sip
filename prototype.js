@@ -281,7 +281,17 @@ btnEvaluate.onclick = async () => {
   scanStatus.textContent = "AI model analyzing session...";
 
   try {
+    scanStatus.textContent = "AI model analyzing session...";
+    await new Promise(r => setTimeout(r, 1200));
     const aiResult = await computeRiskWithAI();
+    const aiOutputEl = document.getElementById("aiOutput");
+
+    aiOutputEl.textContent = JSON.stringify({
+    session: aiResult.sessionText,
+    safeSimilarity: aiResult.safeSimilarity,
+    riskySimilarity: aiResult.riskySimilarity,
+    modelDecision: aiResult.modelLabel
+}, null, 2);
     const score = aiResult.score;
     const factors = buildFactors();
 
