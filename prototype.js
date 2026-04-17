@@ -92,9 +92,9 @@ async function loadModel() {
 
     // Real model inference in the browser
     classifier = await pipeline(
-      "sentiment-analysis",
-      "Xenova/distilbert-base-uncased-finetuned-sst-2-english"
-    );
+  "zero-shot-classification",
+  "Xenova/distilbert-base-mnli"
+);
 
     scanStatus.textContent = "AI model loaded. Ready for biometric scan.";
     btnScan.disabled = false;
@@ -106,26 +106,27 @@ async function loadModel() {
   }
 }
 
-// CONVERT MODEL OUTPUT TO RISK SCORE
+// Convert Model Output to AI Score
 async function computeRiskWithAI() {
   const sessionText = buildSessionText();
-  const output = await classifier(sessionText);
-  const top = output[0];
 
-  // The classifier returns POSITIVE or NEGATIVE with a confidence score.
-  // We map that to a risk score for the dashboard.
-  let riskScore = 0;
+  const labels = ["safe login", "suspicious login"];
 
-  if (top.label.toUpperCase().includes("NEGATIVE")) {
-    riskScore = Math.round(top.score * 100);
-  } else {
-    riskScore = Math.round((1 - top.score) * 100);
-  }
+  const output = await classifier(sessionText, labels);
+  const suspiciousIndex = output.labels.findIndex(
+    label => label.toLowerCase() === "suspicious login"
+  );
+
+  const suspiciousScore = suspiciousIndex >= 0
+    ? output.scores[suspiciousIndex]
+    : 0.5;
+
+  const riskScore = Math.round(suspiciousScore * 100);
 
   return {
     score: Math.min(riskScore, 100),
-    modelLabel: top.label,
-    modelConfidence: Math.round(top.score * 100),
+    modelLabel: suspiciousScore >= 0.5 ? "SUSPICIOUS LOGIN" : "SAFE LOGIN",
+    modelConfidence: Math.round(suspiciousScore * 100),
     sessionText
   };
 }
