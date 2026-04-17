@@ -24,6 +24,8 @@ const fpCountEl = document.getElementById("fpCount");
 const threatCountEl = document.getElementById("threatCount");
 const sensitivityEl = document.getElementById("sensitivity");
 
+const aiOutputEl = document.getElementById("aiOutput");
+
 // STATE
 let threshold = 60;
 let scanned = false;
@@ -203,22 +205,24 @@ async function computeRiskWithAI() {
 
   let modelLabel = "BORDERLINE PATTERN MATCH";
 
-if (safeSimilarity - riskySimilarity > 0.08) {
-  modelLabel = "SAFE PATTERN MATCH";
-} else if (riskySimilarity - safeSimilarity > 0.08) {
-  modelLabel = "RISKY PATTERN MATCH";
-}
+  if (safeSimilarity - riskySimilarity > 0.08) {
+    modelLabel = "SAFE PATTERN MATCH";
+  } else if (riskySimilarity - safeSimilarity > 0.08) {
+    modelLabel = "RISKY PATTERN MATCH";
+  }
 
-return {
-  score: finalScore,
-  anomalyScore,
-  aiAdjustment,
-  variation,
-  modelLabel,
-  sessionText,
-  safeSimilarity: safeSimilarity.toFixed(3),
-  riskySimilarity: riskySimilarity.toFixed(3)
-};
+  return {
+    score: finalScore,
+    anomalyScore,
+    aiAdjustment,
+    variation,
+    modelLabel,
+    sessionText,
+    safeSimilarity: safeSimilarity.toFixed(3),
+    riskySimilarity: riskySimilarity.toFixed(3),
+    confidenceGap: (riskySimilarity - safeSimilarity).toFixed(3)
+  };
+}
 
 // RENDER RESULTS
 function render(score, decision, factors) {
@@ -226,6 +230,7 @@ function render(score, decision, factors) {
   thresholdEl.textContent = threshold;
 
   decisionEl.className = "";
+
   if (decision === "ALLOW") {
     decisionEl.classList.add("allow");
   } else if (decision === "STEP-UP AUTH REQUIRED") {
@@ -250,6 +255,7 @@ function updateModelStatus() {
   threatCountEl.textContent = confirmedThreats;
 
   sensitivityEl.className = "";
+
   if (threshold >= 75) {
     sensitivityEl.textContent = "Low (Less Sensitive)";
     sensitivityEl.classList.add("low");
@@ -292,20 +298,21 @@ btnEvaluate.onclick = async () => {
   scanStatus.textContent = "AI model analyzing session...";
 
   try {
-    scanStatus.textContent = "AI model analyzing session...";
-    await new Promise(r => setTimeout(r, 1200));
-    const aiResult = await computeRiskWithAI();
-    const aiOutputEl = document.getElementById("aiOutput");
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
-    aiOutputEl.textContent = JSON.stringify({
-    session: aiResult.sessionText,
-    safeSimilarity: aiResult.safeSimilarity,
-    riskySimilarity: aiResult.riskySimilarity,
-    confidenceGap: (riskySimilarity - safeSimilarity).toFixed(3),
-    modelDecision: aiResult.modelLabel
-}, null, 2);
+    const aiResult = await computeRiskWithAI();
     const score = aiResult.score;
     const factors = buildFactors();
+
+    if (aiOutputEl) {
+      aiOutputEl.textContent = JSON.stringify({
+        session: aiResult.sessionText,
+        safeSimilarity: aiResult.safeSimilarity,
+        riskySimilarity: aiResult.riskySimilarity,
+        confidenceGap: aiResult.confidenceGap,
+        modelDecision: aiResult.modelLabel
+      }, null, 2);
+    }
 
     if (score < threshold - 15) {
       currentDecision = "ALLOW";
@@ -382,6 +389,10 @@ btnReset.onclick = () => {
   decisionEl.className = "";
   factorsEl.innerHTML = "";
 
+  if (aiOutputEl) {
+    aiOutputEl.textContent = "";
+  }
+
   log("System reset.");
 };
 
@@ -391,4 +402,3 @@ updateModelStatus();
 disableFeedbackButtons();
 loadModel();
 log("Prototype ready.");
-}
