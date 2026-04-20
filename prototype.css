@@ -286,4 +286,34 @@ input[type="text"] {
 pre {
   overflow-x: auto;
 }
+
+.field-label-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 4px;
+}
+
+.mini-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.mini-badge.auto {
+  background: rgba(88,230,169,0.15);
+  color: #58e6a9;
+}
+
+.mini-badge.live {
+  background: rgba(102,179,255,0.15);
+  color: #66b3ff;
+}
+
+.mini-badge.manual {
+  background: rgba(255,204,102,0.15);
+  color: #ffcc66;
+}
 }

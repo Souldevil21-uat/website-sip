@@ -16,6 +16,7 @@ const locationSel = document.getElementById("location");
 const targetPhraseEl = document.getElementById("targetPhrase");
 const typingInputEl = document.getElementById("typingInput");
 const typingStatusEl = document.getElementById("typingStatus");
+const sessionSummaryEl = document.getElementById("sessionSummary");
 
 const riskScoreEl = document.getElementById("riskScore");
 const decisionEl = document.getElementById("decision");
@@ -43,7 +44,6 @@ let detectedLoginTime = "normal";
 let detectedDevice = "known";
 let typingPattern = "normal";
 
-let typingStartTime = null;
 let keyTimestamps = [];
 let backspaceCount = 0;
 
@@ -91,7 +91,7 @@ function detectDeviceFamiliarity() {
   if (!savedFingerprint) {
     localStorage.setItem(key, currentFingerprint);
     detectedDevice = "known";
-    deviceStatusEl.value = "Known Device (first stored browser fingerprint)";
+    deviceStatusEl.value = "Known Device (stored browser fingerprint)";
   } else if (savedFingerprint === currentFingerprint) {
     detectedDevice = "known";
     deviceStatusEl.value = "Known Device";
@@ -103,7 +103,6 @@ function detectDeviceFamiliarity() {
 
 function resetTypingCapture() {
   typingPattern = "normal";
-  typingStartTime = null;
   keyTimestamps = [];
   backspaceCount = 0;
   typingInputEl.value = "";
@@ -112,10 +111,8 @@ function resetTypingCapture() {
 
 function analyzeTypingPattern() {
   const typedText = typingInputEl.value.trim().toLowerCase();
-  const typedLength = typedText.length;
-  const targetLength = targetPhrase.length;
 
-  if (typedLength === 0 || keyTimestamps.length < 2) {
+  if (typedText.length === 0 || keyTimestamps.length < 2) {
     typingPattern = "normal";
     typingStatusEl.textContent = "Not enough typing data yet.";
     return;
@@ -134,6 +131,15 @@ function analyzeTypingPattern() {
     typingPattern === "weird"
       ? `Typing anomaly detected (avg interval ${Math.round(avgInterval)} ms, backspaces ${backspaceCount})`
       : `Typing pattern appears normal (avg interval ${Math.round(avgInterval)} ms, backspaces ${backspaceCount})`;
+}
+
+function updateSessionSummary() {
+  const timeText = detectedLoginTime === "late" ? "Off-hours" : "Normal hours";
+  const deviceText = detectedDevice === "new" ? "New device" : "Known device";
+  const locationText = locationSel.value === "unusual" ? "Unusual area" : "Usual area";
+  const typingText = typingPattern === "weird" ? "Typing anomaly" : "Normal typing";
+
+  sessionSummaryEl.textContent = `${timeText} • ${deviceText} • ${locationText} • ${typingText}`;
 }
 
 function buildSessionText() {
@@ -160,7 +166,7 @@ function buildSessionText() {
   parts.push(
     typingPattern === "weird"
       ? "Typing behavior is inconsistent with the normal user profile."
-      : "Typing behavior matches the user's normal profile."
+      : "Typing behavior matches the normal user profile."
   );
 
   return parts.join(" ");
@@ -171,7 +177,7 @@ function buildFactors() {
 
   if (detectedLoginTime === "late") factors.push("Off-hours login detected automatically");
   if (detectedDevice === "new") factors.push("New or unrecognized device detected automatically");
-  if (locationSel.value === "unusual") factors.push("Location marked as unusual");
+  if (locationSel.value === "unusual") factors.push("Location marked as unusual by user context");
   if (typingPattern === "weird") factors.push("Typing rhythm anomaly detected from live typing sample");
 
   if (factors.length === 0) {
@@ -340,16 +346,9 @@ function updateFeedbackButtons() {
   }
 }
 
-// TYPING EVENTS
-typingInputEl.addEventListener("focus", () => {
-  if (typingStartTime === null) {
-    typingStartTime = performance.now();
-  }
-});
-
+// EVENTS
 typingInputEl.addEventListener("keydown", (event) => {
   keyTimestamps.push(performance.now());
-
   if (event.key === "Backspace") {
     backspaceCount++;
   }
@@ -357,9 +356,13 @@ typingInputEl.addEventListener("keydown", (event) => {
 
 typingInputEl.addEventListener("input", () => {
   analyzeTypingPattern();
+  updateSessionSummary();
 });
 
-// BUTTON EVENTS
+locationSel.addEventListener("change", () => {
+  updateSessionSummary();
+});
+
 btnScan.onclick = () => {
   scanned = true;
   scanStatus.textContent = "Entry approval complete";
@@ -371,7 +374,7 @@ btnEvaluate.onclick = async () => {
   if (!scanned || !extractor) return;
 
   btnEvaluate.disabled = true;
-  scanStatus.textContent = "AI model analyzing session...";
+  scanStatus.textContent = "AI analyzing session...";
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -481,6 +484,7 @@ btnReset.onclick = () => {
   resetTypingCapture();
   detectLoginTime();
   detectDeviceFamiliarity();
+  updateSessionSummary();
 
   log("System reset.");
 };
@@ -493,5 +497,6 @@ disableFeedbackButtons();
 detectLoginTime();
 detectDeviceFamiliarity();
 resetTypingCapture();
+updateSessionSummary();
 loadModel();
 log("Prototype ready.");
