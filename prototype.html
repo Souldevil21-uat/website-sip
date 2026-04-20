@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Passwordless AI Prototype</title>
+  <title>AI-Assisted Passwordless Login Prototype</title>
   <link rel="stylesheet" href="prototype.css" />
 </head>
 <body>
@@ -11,19 +11,20 @@
 
     <header class="card">
       <div class="result-pill">Prototype Demo</div>
-      <h1>AI Passwordless Login</h1>
+      <h1>AI-Assisted Passwordless Login Prototype</h1>
       <p class="sub">
-        This prototype demonstrates biometric authentication combined with a real AI model
-        that analyzes session context and drives the dashboard's risk decision.
+        This prototype demonstrates simulated passwordless entry approval combined with a real AI model
+        that analyzes browser-captured session context and drives the dashboard's risk decision.
       </p>
-
-      <p><strong>Model:</strong> all-MiniLM-L6-v2 (Transformers.js)</p>
     </header>
 
     <section class="card">
-      <h2>Step 1: Biometric Scan</h2>
-      <button id="btnScan" class="btn" disabled>Scan Biometrics</button>
+      <h2>Step 1: Simulated Biometric Approval</h2>
+      <button id="btnScan" class="btn" disabled>Approve Entry</button>
       <p id="scanStatus">Loading AI model...</p>
+      <p class="small">
+        Note: This prototype simulates biometric approval, but uses real browser-captured behavioral and session signals.
+      </p>
     </section>
 
     <section class="card">
@@ -31,45 +32,42 @@
 
       <div class="grid">
         <label>
-          Login Time
-          <select id="loginTime">
-            <option value="normal">Normal</option>
-            <option value="late">Late Night</option>
-          </select>
+          Detected Login Time
+          <input id="detectedTime" type="text" readonly />
         </label>
 
         <label>
-          Device
-          <select id="device">
-            <option value="known">Known</option>
-            <option value="new">New</option>
-          </select>
+          Device Familiarity
+          <input id="deviceStatus" type="text" readonly />
         </label>
 
         <label>
-          Location
+          Location Context
           <select id="location">
-            <option value="usual">Usual</option>
-            <option value="unusual">Unusual</option>
-          </select>
-        </label>
-
-        <label>
-          Typing Pattern
-          <select id="typing">
-            <option value="normal">Normal</option>
-            <option value="weird">Unusual</option>
+            <option value="usual">Usual Area</option>
+            <option value="unusual">Unusual Area</option>
           </select>
         </label>
       </div>
+
+      <h3>Typing Rhythm Capture</h3>
+      <p class="small">
+        Type the following phrase naturally to capture typing behavior:
+        <strong id="targetPhrase">my login is secure</strong>
+      </p>
+
+      <label>
+        Typed Phrase
+        <input id="typingInput" type="text" autocomplete="off" />
+      </label>
+
+      <p><strong>Typing Result:</strong> <span id="typingStatus">Waiting for typing sample...</span></p>
 
       <button id="btnEvaluate" class="btn" disabled>Evaluate Session</button>
     </section>
 
     <section class="card">
       <h2>AI Result</h2>
-      <p><strong>AI Model Output:</strong></p>
-      <pre id="aiOutput" style="background:#111;padding:10px;border-radius:5px;color:#0f0;"></pre>
 
       <p><strong>Risk Score:</strong> <span id="riskScore">—</span></p>
       <p><strong>Decision:</strong> <span id="decision">—</span></p>
@@ -77,6 +75,9 @@
 
       <h3>Why?</h3>
       <ul id="factors"></ul>
+
+      <p><strong>AI Model Output:</strong></p>
+      <pre id="aiOutput" style="background:#111;padding:10px;border-radius:8px;color:#0f0;white-space:pre-wrap;"></pre>
 
       <div class="actions">
         <button id="btnFalsePositive" class="btn secondary" disabled>False Positive</button>
@@ -91,9 +92,11 @@
       <p><strong>False Positives Learned:</strong> <span id="fpCount">0</span></p>
       <p><strong>Confirmed Threats Learned:</strong> <span id="threatCount">0</span></p>
       <p><strong>Current Sensitivity:</strong> <span id="sensitivity">Moderate</span></p>
+      <p><strong>Previous Threshold:</strong> <span id="prevThreshold">—</span></p>
+      <p><strong>Latest Threshold Change:</strong> <span id="thresholdChange">No feedback applied yet.</span></p>
 
       <p class="sub">
-        The dashboard threshold adapts based on feedback after each evaluated session.
+        The dashboard threshold adapts based on user feedback after each evaluated session.
       </p>
     </section>
 

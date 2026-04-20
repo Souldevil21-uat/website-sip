@@ -271,4 +271,19 @@ strong {
 .low { color: #58e6a9; font-weight: 700; }
 .moderate { color: #ffcc66; font-weight: 700; }
 .high { color: #ff6b6b; font-weight: 700; }
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(8,16,32,0.85);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+pre {
+  overflow-x: auto;
+}
 }

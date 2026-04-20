@@ -9,22 +9,26 @@ const btnReset = document.getElementById("btnReset");
 
 const scanStatus = document.getElementById("scanStatus");
 
-const loginTime = document.getElementById("loginTime");
-const device = document.getElementById("device");
+const detectedTimeEl = document.getElementById("detectedTime");
+const deviceStatusEl = document.getElementById("deviceStatus");
 const locationSel = document.getElementById("location");
-const typing = document.getElementById("typing");
+
+const targetPhraseEl = document.getElementById("targetPhrase");
+const typingInputEl = document.getElementById("typingInput");
+const typingStatusEl = document.getElementById("typingStatus");
 
 const riskScoreEl = document.getElementById("riskScore");
 const decisionEl = document.getElementById("decision");
 const thresholdEl = document.getElementById("threshold");
 const factorsEl = document.getElementById("factors");
+const aiOutputEl = document.getElementById("aiOutput");
 const logEl = document.getElementById("log");
 
 const fpCountEl = document.getElementById("fpCount");
 const threatCountEl = document.getElementById("threatCount");
 const sensitivityEl = document.getElementById("sensitivity");
-
-const aiOutputEl = document.getElementById("aiOutput");
+const prevThresholdEl = document.getElementById("prevThreshold");
+const thresholdChangeEl = document.getElementById("thresholdChange");
 
 // STATE
 let threshold = 60;
@@ -35,7 +39,17 @@ let feedbackApplied = false;
 let currentDecision = "";
 let extractor = null;
 
-// Reference examples for similarity comparison
+let detectedLoginTime = "normal";
+let detectedDevice = "known";
+let typingPattern = "normal";
+
+let typingStartTime = null;
+let keyTimestamps = [];
+let backspaceCount = 0;
+
+const targetPhrase = "my login is secure";
+
+// Reference examples
 const SAFE_EXAMPLES = [
   "Routine login during normal business hours from a recognized device in the user's usual location with normal typing behavior and no anomalies detected.",
   "Expected account access from a trusted device, familiar region, standard work hours, and behavior matching the legitimate user's typing profile.",
@@ -52,61 +66,121 @@ const RISKY_EXAMPLES = [
   "Dangerous login pattern suggesting account compromise due to multiple behavioral and contextual anomalies."
 ];
 
-// LOG FUNCTION
+// HELPERS
 function log(message) {
   const li = document.createElement("li");
   li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
   logEl.prepend(li);
 }
 
-// BUILD SESSION TEXT FOR THE MODEL
+function detectLoginTime() {
+  const hour = new Date().getHours();
+  detectedLoginTime = (hour >= 23 || hour < 5) ? "late" : "normal";
+  detectedTimeEl.value = detectedLoginTime === "late" ? "Late Night / Off-Hours" : "Normal Access Hours";
+}
+
+function getDeviceFingerprint() {
+  return `${navigator.userAgent}|${navigator.language}|${screen.width}x${screen.height}`;
+}
+
+function detectDeviceFamiliarity() {
+  const key = "sip_known_device_fingerprint";
+  const currentFingerprint = getDeviceFingerprint();
+  const savedFingerprint = localStorage.getItem(key);
+
+  if (!savedFingerprint) {
+    localStorage.setItem(key, currentFingerprint);
+    detectedDevice = "known";
+    deviceStatusEl.value = "Known Device (first stored browser fingerprint)";
+  } else if (savedFingerprint === currentFingerprint) {
+    detectedDevice = "known";
+    deviceStatusEl.value = "Known Device";
+  } else {
+    detectedDevice = "new";
+    deviceStatusEl.value = "New / Unrecognized Device";
+  }
+}
+
+function resetTypingCapture() {
+  typingPattern = "normal";
+  typingStartTime = null;
+  keyTimestamps = [];
+  backspaceCount = 0;
+  typingInputEl.value = "";
+  typingStatusEl.textContent = "Waiting for typing sample...";
+}
+
+function analyzeTypingPattern() {
+  const typedText = typingInputEl.value.trim().toLowerCase();
+  const typedLength = typedText.length;
+  const targetLength = targetPhrase.length;
+
+  if (typedLength === 0 || keyTimestamps.length < 2) {
+    typingPattern = "normal";
+    typingStatusEl.textContent = "Not enough typing data yet.";
+    return;
+  }
+
+  const totalDuration = keyTimestamps[keyTimestamps.length - 1] - keyTimestamps[0];
+  const avgInterval = totalDuration / (keyTimestamps.length - 1);
+  const tooManyBackspaces = backspaceCount >= 3;
+  const phraseMismatch = typedText !== targetPhrase;
+  const verySlow = avgInterval > 450;
+  const veryFast = avgInterval < 70;
+
+  typingPattern = (tooManyBackspaces || phraseMismatch || verySlow || veryFast) ? "weird" : "normal";
+
+  typingStatusEl.textContent =
+    typingPattern === "weird"
+      ? `Typing anomaly detected (avg interval ${Math.round(avgInterval)} ms, backspaces ${backspaceCount})`
+      : `Typing pattern appears normal (avg interval ${Math.round(avgInterval)} ms, backspaces ${backspaceCount})`;
+}
+
 function buildSessionText() {
   const parts = [];
 
-  if (loginTime.value === "late") {
-    parts.push("Login occurred outside normal access hours.");
-  } else {
-    parts.push("Login occurred during expected access hours.");
-  }
+  parts.push(
+    detectedLoginTime === "late"
+      ? "Login occurred outside normal access hours."
+      : "Login occurred during expected access hours."
+  );
 
-  if (device.value === "new") {
-    parts.push("Device is new and not previously recognized.");
-  } else {
-    parts.push("Device is known and previously trusted.");
-  }
+  parts.push(
+    detectedDevice === "new"
+      ? "Device is new and not previously recognized."
+      : "Device is known and previously trusted."
+  );
 
-  if (locationSel.value === "unusual") {
-    parts.push("Location is unusual compared to prior user activity.");
-  } else {
-    parts.push("Location matches the user's normal access area.");
-  }
+  parts.push(
+    locationSel.value === "unusual"
+      ? "Location is unusual compared to prior user activity."
+      : "Location matches the user's normal access area."
+  );
 
-  if (typing.value === "weird") {
-    parts.push("Typing behavior is inconsistent with the normal user profile.");
-  } else {
-    parts.push("Typing behavior matches the user's normal profile.");
-  }
+  parts.push(
+    typingPattern === "weird"
+      ? "Typing behavior is inconsistent with the normal user profile."
+      : "Typing behavior matches the user's normal profile."
+  );
 
   return parts.join(" ");
 }
 
-// EXPLANATION LIST FOR THE UI
 function buildFactors() {
   const factors = [];
 
-  if (loginTime.value === "late") factors.push("Late night login detected");
-  if (device.value === "new") factors.push("New or unrecognized device");
-  if (locationSel.value === "unusual") factors.push("Login from unusual location");
-  if (typing.value === "weird") factors.push("Typing pattern anomaly detected");
+  if (detectedLoginTime === "late") factors.push("Off-hours login detected automatically");
+  if (detectedDevice === "new") factors.push("New or unrecognized device detected automatically");
+  if (locationSel.value === "unusual") factors.push("Location marked as unusual");
+  if (typingPattern === "weird") factors.push("Typing rhythm anomaly detected from live typing sample");
 
   if (factors.length === 0) {
-    factors.push("All behavioral signals fall within normal thresholds.");
+    factors.push("All evaluated session signals fall within normal thresholds.");
   }
 
   return factors;
 }
 
-// LOAD REAL AI MODEL
 async function loadModel() {
   try {
     scanStatus.textContent = "Loading AI model...";
@@ -117,7 +191,7 @@ async function loadModel() {
       "Xenova/all-MiniLM-L6-v2"
     );
 
-    scanStatus.textContent = "AI model loaded. Ready for biometric scan.";
+    scanStatus.textContent = "AI model loaded. Ready for entry approval.";
     btnScan.disabled = false;
     log("AI model loaded successfully.");
   } catch (error) {
@@ -127,7 +201,6 @@ async function loadModel() {
   }
 }
 
-// GET NORMALIZED EMBEDDING
 async function getEmbedding(text) {
   const output = await extractor(text, {
     pooling: "mean",
@@ -137,7 +210,6 @@ async function getEmbedding(text) {
   return Array.from(output.data);
 }
 
-// COSINE SIMILARITY
 function cosineSimilarity(a, b) {
   let dot = 0;
   let magA = 0;
@@ -149,14 +221,10 @@ function cosineSimilarity(a, b) {
     magB += b[i] * b[i];
   }
 
-  if (magA === 0 || magB === 0) {
-    return 0;
-  }
-
+  if (magA === 0 || magB === 0) return 0;
   return dot / (Math.sqrt(magA) * Math.sqrt(magB));
 }
 
-// AVERAGE SIMILARITY TO A SET OF EXAMPLES
 async function averageSimilarity(sessionEmbedding, examples) {
   let total = 0;
 
@@ -168,7 +236,6 @@ async function averageSimilarity(sessionEmbedding, examples) {
   return total / examples.length;
 }
 
-// COMPUTE RISK WITH REAL AI EMBEDDINGS
 async function computeRiskWithAI() {
   const sessionText = buildSessionText();
   const sessionEmbedding = await getEmbedding(sessionText);
@@ -176,25 +243,22 @@ async function computeRiskWithAI() {
   const safeSimilarity = await averageSimilarity(sessionEmbedding, SAFE_EXAMPLES);
   const riskySimilarity = await averageSimilarity(sessionEmbedding, RISKY_EXAMPLES);
 
-  // Main anomaly-driven score
   let anomalyScore = 0;
-  if (loginTime.value === "late") anomalyScore += 20;
-  if (device.value === "new") anomalyScore += 30;
+  if (detectedLoginTime === "late") anomalyScore += 20;
+  if (detectedDevice === "new") anomalyScore += 30;
   if (locationSel.value === "unusual") anomalyScore += 30;
-  if (typing.value === "weird") anomalyScore += 20;
+  if (typingPattern === "weird") anomalyScore += 20;
 
-  // Real AI influence from semantic similarity
   const aiDelta = riskySimilarity - safeSimilarity;
   const aiAdjustment = Math.round(aiDelta * 15);
 
-  // Small variation so repeated runs are not identical
   let variation = 0;
   if (anomalyScore === 0) {
-    variation = Math.floor(Math.random() * 4); // 0 to 3
+    variation = Math.floor(Math.random() * 4);
   } else if (anomalyScore >= 80) {
-    variation = Math.floor(Math.random() * 5) - 2; // -2 to +2
+    variation = Math.floor(Math.random() * 5) - 2;
   } else {
-    variation = Math.floor(Math.random() * 7) - 3; // -3 to +3
+    variation = Math.floor(Math.random() * 7) - 3;
   }
 
   const finalScore = Math.max(
@@ -202,7 +266,6 @@ async function computeRiskWithAI() {
     Math.min(100, anomalyScore + aiAdjustment + variation)
   );
 
-  // Make the model label track the practical result range
   let modelLabel = "AI REVIEW: BORDERLINE";
   if (finalScore <= 15) {
     modelLabel = "AI REVIEW: SAFE PATTERN";
@@ -223,13 +286,11 @@ async function computeRiskWithAI() {
   };
 }
 
-// RENDER RESULTS
 function render(score, decision, factors) {
   riskScoreEl.textContent = score;
   thresholdEl.textContent = threshold;
 
   decisionEl.className = "";
-
   if (decision === "ALLOW") {
     decisionEl.classList.add("allow");
   } else if (decision === "STEP-UP AUTH REQUIRED") {
@@ -248,13 +309,11 @@ function render(score, decision, factors) {
   });
 }
 
-// MODEL STATUS
 function updateModelStatus() {
   fpCountEl.textContent = falsePositives;
   threatCountEl.textContent = confirmedThreats;
 
   sensitivityEl.className = "";
-
   if (threshold >= 75) {
     sensitivityEl.textContent = "Low (Less Sensitive)";
     sensitivityEl.classList.add("low");
@@ -267,14 +326,13 @@ function updateModelStatus() {
   }
 }
 
-// BUTTON CONTROL
 function disableFeedbackButtons() {
   btnFalsePositive.disabled = true;
   btnThreat.disabled = true;
 }
 
 function updateFeedbackButtons() {
-  if (currentDecision === "FLAGGED" && feedbackApplied === false) {
+  if (currentDecision === "FLAGGED" && !feedbackApplied) {
     btnFalsePositive.disabled = false;
     btnThreat.disabled = false;
   } else {
@@ -282,12 +340,31 @@ function updateFeedbackButtons() {
   }
 }
 
-// EVENTS
+// TYPING EVENTS
+typingInputEl.addEventListener("focus", () => {
+  if (typingStartTime === null) {
+    typingStartTime = performance.now();
+  }
+});
+
+typingInputEl.addEventListener("keydown", (event) => {
+  keyTimestamps.push(performance.now());
+
+  if (event.key === "Backspace") {
+    backspaceCount++;
+  }
+});
+
+typingInputEl.addEventListener("input", () => {
+  analyzeTypingPattern();
+});
+
+// BUTTON EVENTS
 btnScan.onclick = () => {
   scanned = true;
-  scanStatus.textContent = "Biometric scan complete";
+  scanStatus.textContent = "Entry approval complete";
   btnEvaluate.disabled = false;
-  log("Biometric scan successful.");
+  log("Simulated passwordless entry approval completed.");
 };
 
 btnEvaluate.onclick = async () => {
@@ -309,6 +386,7 @@ btnEvaluate.onclick = async () => {
         safeSimilarity: aiResult.safeSimilarity,
         riskySimilarity: aiResult.riskySimilarity,
         confidenceGap: aiResult.confidenceGap,
+        aiAdjustment: aiResult.aiAdjustment,
         modelDecision: aiResult.modelLabel
       }, null, 2);
     }
@@ -338,7 +416,7 @@ btnEvaluate.onclick = async () => {
     console.error(error);
     log("Error: session analysis failed.");
   } finally {
-    scanStatus.textContent = "Biometric scan complete";
+    scanStatus.textContent = "Entry approval complete";
     btnEvaluate.disabled = false;
   }
 };
@@ -346,29 +424,35 @@ btnEvaluate.onclick = async () => {
 btnFalsePositive.onclick = () => {
   if (feedbackApplied || currentDecision !== "FLAGGED") return;
 
+  const oldThreshold = threshold;
   falsePositives++;
   threshold = Math.min(90, threshold + 5);
   feedbackApplied = true;
 
   updateModelStatus();
   thresholdEl.textContent = threshold;
+  prevThresholdEl.textContent = oldThreshold;
+  thresholdChangeEl.textContent = `False positive feedback raised threshold from ${oldThreshold} to ${threshold}.`;
   updateFeedbackButtons();
 
-  log(`False positive detected → system sensitivity reduced (Total: ${falsePositives})`);
+  log(`False positive detected → threshold changed from ${oldThreshold} to ${threshold}`);
 };
 
 btnThreat.onclick = () => {
   if (feedbackApplied || currentDecision !== "FLAGGED") return;
 
+  const oldThreshold = threshold;
   confirmedThreats++;
   threshold = Math.max(40, threshold - 5);
   feedbackApplied = true;
 
   updateModelStatus();
   thresholdEl.textContent = threshold;
+  prevThresholdEl.textContent = oldThreshold;
+  thresholdChangeEl.textContent = `Confirmed threat feedback lowered threshold from ${oldThreshold} to ${threshold}.`;
   updateFeedbackButtons();
 
-  log(`Threat confirmed → system sensitivity increased (Total: ${confirmedThreats})`);
+  log(`Threat confirmed → threshold changed from ${oldThreshold} to ${threshold}`);
 };
 
 btnReset.onclick = () => {
@@ -377,7 +461,7 @@ btnReset.onclick = () => {
   currentDecision = "";
 
   scanStatus.textContent = extractor
-    ? "AI model loaded. Ready for biometric scan."
+    ? "AI model loaded. Ready for entry approval."
     : "Loading AI model...";
 
   btnEvaluate.disabled = true;
@@ -387,17 +471,27 @@ btnReset.onclick = () => {
   decisionEl.textContent = "—";
   decisionEl.className = "";
   factorsEl.innerHTML = "";
+  prevThresholdEl.textContent = "—";
+  thresholdChangeEl.textContent = "No feedback applied yet.";
 
   if (aiOutputEl) {
     aiOutputEl.textContent = "";
   }
 
+  resetTypingCapture();
+  detectLoginTime();
+  detectDeviceFamiliarity();
+
   log("System reset.");
 };
 
 // INIT
+targetPhraseEl.textContent = targetPhrase;
 thresholdEl.textContent = threshold;
 updateModelStatus();
 disableFeedbackButtons();
+detectLoginTime();
+detectDeviceFamiliarity();
+resetTypingCapture();
 loadModel();
 log("Prototype ready.");
